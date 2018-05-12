@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('ng-request-network App', () => {
+describe('request-network App', () => {
   let page: AppPage;
 
   beforeEach(() => {
