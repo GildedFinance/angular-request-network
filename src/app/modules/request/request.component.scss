@@ -1,0 +1,79 @@
+// NETWORK ID
+.network-icon {
+  height: 12px;
+  min-width: 12px;
+  margin: 8px;
+}
+
+.network {
+  .network-icon {
+    display: none;
+  }
+  .network-name {
+    &::before {
+      content: '? Unknown Network';
+      color: #aeaeae;
+      margin-left: 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+.network-1 {
+  span.network-icon {
+    display: flex;
+    transform: rotate(45deg);
+    background: #038789;
+  }
+  span.network-name {
+    &::before {
+      content: 'Main Network';
+      margin-left: 0;
+      color: #038789;
+    }
+  }
+}
+
+.network-3 {
+  span.network-icon {
+    display: flex;
+    background: #E91550;
+    border-radius: 10px;
+  }
+  span.network-name {
+    &::before {
+      content: 'Ropsten Test Net';
+      margin-left: 0;
+      color: #E91550;
+    }
+  }
+}
+
+.network-42 {
+  span.network-icon {
+    display: flex;
+    transform: rotate(45deg);
+    border: 3px solid #690496;
+  }
+  span.network-name {
+    &::before {
+      content: 'Kovan Test Net';
+      margin-left: 0;
+      color: #690496;
+    }
+  }
+}
+
+.network-4 {
+  span.network-icon {
+    display: flex;
+    background: #EBB33F;
+  }
+  span.network-name {
+    &::before {
+      content: 'Rinkeby Test Net';
+      margin-left: 0;
+      color: #EBB33F;
+    }
+  }
+}

@@ -1,22 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { Web3Service } from '../../util/web3.service';
-import { IfObservable } from 'rxjs/observable/IfObservable';
+import { Observable } from 'rxjs/Observable';
+import { BlockiesModule } from 'angular-blockies';
 
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
-  styleUrls: ['./request.component.css']
+  styleUrls: ['./request.component.scss']
 })
 export class RequestComponent implements OnInit {
 
   currentAccount: Observable<any>;
+
+  // ng model
   payee = '0x662a3202A69E88A82B48e79EBeE36A9cE98A0508'; // Change this to your receive address to make development easier
   amount = '0.1';
+  reason = '';
+
   step = 1;
   request: any;
 
   constructor(
-    private web3Service: Web3Service
+    public web3Service: Web3Service
   ) {}
 
   ngOnInit() {

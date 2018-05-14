@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
     "@requestnetwork/request-network.js": "^0.5.0",
+    "angular-blockies": "^1.1.0",
     "angular-bootstrap-md": "^6.0.2",
     "chart.js": "^2.5.0",
     "core-js": "^2.4.1",
