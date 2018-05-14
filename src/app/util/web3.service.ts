@@ -69,7 +69,7 @@ export class Web3Service {
             engine.addProvider(new RpcSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
             engine.start();
             const web3 = new Web3(engine);
-            const addresses = Object.entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
+            const addresses = (<any>Object).entries(res).map(e => ({ derivationPath: e[0], address: e[1], balance: 0 }));
             for (const address of addresses) {
               address.balance = this.fromWei(await web3.eth.getBalance(address.address.toString()));
             }

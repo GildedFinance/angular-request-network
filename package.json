@@ -1,5 +1,5 @@
 {
-  "name": "request-network",
+  "name": "angular-request-network",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -11,7 +11,6 @@
     "e2e": "ng e2e",
     "packagr": "ng-packagr -p ng-package.json"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^5.2.10",
     "@angular/cli": "^1.7.4",
