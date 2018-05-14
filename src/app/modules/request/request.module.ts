@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RequestComponent } from './request.component';
 import { Web3Service } from '../../util/web3.service';
 import { BlockiesModule } from 'angular-blockies';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    BlockiesModule
+    BlockiesModule,
+    ToastrModule.forRoot(), // ToastrModule added
   ],
   declarations: [
     RequestComponent

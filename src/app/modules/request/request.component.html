@@ -1,4 +1,4 @@
-<main class="d-flex flex-row">
+<main class="d-flex flex-row mt-5">
   <!-- <ngx-loading-bar [color]="'#ffa600'"></ngx-loading-bar> -->
   <section class="col mb-4">
     <div class="container-fluid content-padding">
@@ -20,11 +20,14 @@
         </div>
 
         <!-- button: create invoice  -->
-        <button type="button" (click)="createInvoice()" class="btn btn-primary">Create Invoice</button>
+        <button type="button" (click)="createInvoice()" class="btn btn-primary">
+          Create Invoice
+        </button>
       </div>
 
       <!-- step 2 -->
       <div *ngIf="step == 2">
+        <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
         <h3 class="mt-4">Wait until the invoice is confirmed on the blockchain...</h3>
       </div>
 

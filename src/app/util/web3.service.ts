@@ -1,7 +1,7 @@
 import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-// import { MatSnackBar } from '@angular/material';
+import { ToastrService } from 'ngx-toastr';
 
 import RequestNetwork from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
@@ -43,7 +43,7 @@ export class Web3Service {
   public BN;
   public isAddress;
 
-  constructor() {
+  constructor(private toastrService: ToastrService) {
     window.addEventListener('load', async event => {
       console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
@@ -93,7 +93,7 @@ export class Web3Service {
     engine.start();
 
     this.checkAndInstantiateWeb3(new Web3(engine));
-    this.openSnackBar('Ledger Wallet successfully connected.', null, 'success-snackbar');
+    this.openNotification('Ledger Wallet successfully connected.', null, 'success-snackbar');
     this.ledgerConnected = true;
   }
 
@@ -124,7 +124,7 @@ export class Web3Service {
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
-      this.openSnackBar(this.requestNetworkNotReadyMsg);
+      this.openNotification(this.requestNetworkNotReadyMsg);
       console.error(err);
     }
 
@@ -172,12 +172,12 @@ export class Web3Service {
 
   private watchDog() {
     const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
-    if (stop) { this.openSnackBar(); }
+    if (stop) { this.openNotification(); }
     return stop;
   }
 
   /* beautify preserve:start */
-  public openSnackBar(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
+  public openNotification(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
   /* beautify preserve:end */
     if (!msg) {
       // tslint:disable-next-line:max-line-length
@@ -185,15 +185,12 @@ export class Web3Service {
       if (msg === '') { return; }
     }
 
-    alert(msg); // replace with mdbbootstrap
-    // this.snackBar.open(msg, ok || 'Ok', {
-    //   duration: duration || 5000,
-    //   horizontalPosition: 'right',
-    //   verticalPosition: 'top',
-    //   panelClass: panelClass || 'warning-snackbar',
-    // });
+    if (ok) {
+      this.toastrService.success(msg, 'Request Network');
+    } else {
+      this.toastrService.error(msg, 'Request Network');
+    }
   }
-
 
   public setSearchValue(searchValue: string) {
     this.searchValue.next(searchValue);
@@ -219,7 +216,7 @@ export class Web3Service {
 
   private confirmTxOnLedgerMsg() {
     if (this.ledgerConnected) {
-      setTimeout(_ => { this.openSnackBar('Please confirm transaction on your ledger.', null, 'info-snackbar'); }, 1500);
+      setTimeout(_ => { this.openNotification('Please confirm transaction on your ledger.', null, 'info-snackbar'); }, 1500);
     }
   }
 

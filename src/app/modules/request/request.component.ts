@@ -13,12 +13,13 @@ export class RequestComponent implements OnInit {
   currentAccount: Observable<any>;
 
   // ng model
-  payee = '0x662a3202A69E88A82B48e79EBeE36A9cE98A0508'; // Change this to your receive address to make development easier
+  payee = '0x5129F06d1E500B342807592c2d04EAE664eb52B2'; // Change this to your receive address to make development easier
   amount = '0.1';
   reason = '';
 
   step = 1;
   request: any;
+  createLoading = false;
 
   constructor(
     public web3Service: Web3Service
@@ -29,15 +30,43 @@ export class RequestComponent implements OnInit {
   }
 
   async createInvoice() {
-    this.step = 2;
-    const request = await this.web3Service.createRequestAsPayee(this.payee, this.amount, '');
+    this.createLoading = true;
 
-    if (request) {
+    this.web3Service.createRequestAsPayee(this.payee, String(this.amount), JSON.stringify({reason: this.reason}), this._callbackRequest)
+      .on('broadcasted', response => this._callbackRequest(response))
+      .then(
+        response => {},
+        err => this._callbackRequest(err));
+  }
+
+  private _callbackRequest(request) {
+    if (request.transaction) {
+        // successfull transaction
       this.request = request;
-      this.step = 3;
+      this.step = 2;
+    } else if (request.message) {
+      // request.message  | failed
+      this._handleErrorMessage(request.message);
     } else {
-      this.step = -1;
+      console.error(request);
+      this.web3Service.openNotification(request.message);
+
+      // navigate back
+      this.step--;
     }
+  }
+
+  private _handleErrorMessage(message: any) {
+    if (message.startsWith('Invalid status 6985')) {
+      // this.web3Service.openSnackBar('Invalid status 6985. User denied transaction.');
+    } else if (message.startsWith('Failed to subscribe to new newBlockHeaders')) {
+      return;
+    } else if (message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
+      this.web3Service.openNotification('MetaMask Tx Signature: User denied transaction signature.');
+    }
+
+    // navigate back
+    this.step--;
   }
 
   async payInvoice() {
