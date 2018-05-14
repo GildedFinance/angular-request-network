@@ -1,0 +1,63 @@
+<main class="d-flex flex-row">
+  <!-- <ngx-loading-bar [color]="'#ffa600'"></ngx-loading-bar> -->
+  <section class="col mb-4">
+    <div class="container-fluid content-padding">
+
+      <!-- step 1 -->
+      <div *ngIf="step == 1">
+        <h4>Enter an address for the person who should receive payment</h4>
+        <div class="form-group">
+          <label>Payee</label>
+          <input type="text" class="form-control" [(ngModel)]="payee">
+        </div>
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" [(ngModel)]="amount">
+        </div>
+
+        <button type="button" (click)="createInvoice()" class="btn btn-primary">Create Invoice</button>
+      </div>
+
+      <!-- step 2 -->
+      <div *ngIf="step == 2">
+        <h3 class="mt-4">Wait until the invoice is confirmed on the blockchain...</h3>
+      </div>
+
+      <!-- step 3 -->
+      <div *ngIf="step == 3">
+        <h3 class="mt-4">Invoice created. Now ready to pay....</h3>
+
+        <button type="button" (click)="payInvoice()" class="btn btn-primary">Pay Invoice</button>
+      </div>
+
+      <!-- step 4 -->
+      <div *ngIf="step == 4">
+        <h3 class="mt-4">Waiting for payment to clear....</h3>
+      </div>
+
+      <!-- step 5 -->
+      <div *ngIf="step == 5">
+        <h3 class="mt-4">Invoice paid successfully :-)</h3>
+      </div>
+
+      <div *ngIf="step == -1">
+        <h3 class="mt-4" >Error :-( Please check console output</h3>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="col mb-4">
+      <div class="container-fluid content-padding">
+        <div class="row">
+          <div class="col-3">
+            <h4>Metamask Account: </h4>
+          </div>
+          <div class="col-9">
+              {{currentAccount | async}}
+          </div>
+        </div>
+      </div>
+  </section>
+
+</main>
