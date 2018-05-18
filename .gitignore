@@ -45,3 +45,7 @@ Thumbs.db
 #npm packager build
 .ng_pkg_build
 dist.tgz
+dist
+
+#yarn
+yarn-error.log
