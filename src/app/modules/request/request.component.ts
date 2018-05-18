@@ -40,6 +40,10 @@ export class RequestComponent implements OnInit {
   }
 
   private _callbackRequest(request) {
+    // reset button
+    this.createLoading = false;
+
+
     if (request.transaction) {
         // successfull transaction
       this.request = request;
@@ -48,11 +52,10 @@ export class RequestComponent implements OnInit {
       // request.message  | failed
       this._handleErrorMessage(request.message);
     } else {
-      console.error(request);
       this.web3Service.openNotification(request.message);
 
       // navigate back
-      this.step--;
+      if (this.step > 1) { this.step--; }
     }
   }
 
@@ -66,7 +69,7 @@ export class RequestComponent implements OnInit {
     }
 
     // navigate back
-    this.step--;
+    if (this.step > 1) { this.step--; }
   }
 
   async payInvoice() {
