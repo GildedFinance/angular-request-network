@@ -45,7 +45,6 @@ export class Web3Service {
 
   constructor(private toastrService: ToastrService) {
     window.addEventListener('load', async event => {
-      console.log('web3service instantiate web3');
       this.checkAndInstantiateWeb3();
       this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
       setInterval(async _ => await this.refreshAccounts(), 1000);
@@ -186,9 +185,9 @@ export class Web3Service {
     }
 
     if (ok) {
-      this.toastrService.success(msg, 'Request Network');
+      this.toastrService.success(msg, 'Request Network', { 'positionClass': 'toast-top-full-width' });
     } else {
-      this.toastrService.error(msg, 'Request Network');
+      this.toastrService.error(msg, 'Request Network', { 'positionClass': 'toast-top-full-width' });
     }
   }
 
