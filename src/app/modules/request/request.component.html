@@ -5,7 +5,7 @@
       <!-- step 1 -->
       <div class="card" *ngIf="step == 1">
         <div class="card-body">
-          <div class="card-title">Enter an address for the person who should receive payment</div>
+          <div class="card-title success">Enter an address for the person who should receive payment</div>
 
           <div class="card-text">
               <div class="form-group">
@@ -32,11 +32,11 @@
         </div>
       </div>
 
-      <!-- step 2 -->
+      <!-- step 2: wait confirmation from blockchain -->
       <div class="card" *ngIf="step == 2">
         <div class="card-body">
-            <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
             <div class="card-text">
+                <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i> 
                 Wait until the invoice is confirmed on the blockchain...
             </div>
         </div>
@@ -45,9 +45,18 @@
       <!-- step 3 -->
       <div class="card" *ngIf="step == 3">
           <div class="card-body">
-              <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
-              <div class="card-text">
-                  Invoice created. Now ready to pay....
+              <div class="card-title">
+                  Invoice created. Now it is ready to pay
+              </div>
+              <div class="card-body">
+                <div class="form-group d-flex flex-column">
+                  <label for="">Request Id:</label>
+                  <span>{{ requestResponse.request.requestId }}</span>
+                </div>
+                <div class="form-group d-flex flex-column" *ngIf="requestResponse.request.data.data.reason">
+                  <label for="">Reason:</label>
+                  <span>{{ requestResponse.request.data.data.reason }}</span>
+                </div>
               </div>
           </div>
 
@@ -57,19 +66,31 @@
       </div>
 
       <!-- step 4 -->
-      <div *ngIf="step == 4">
-        <h3 class="mt-4">Waiting for payment to clear....</h3>
+      <div class="card" *ngIf="step == 4">
+        <div class="card-body">
+          <div class="card-text">
+              <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i> 
+              Waiting for payment to clear...
+          </div>
+        </div>
       </div>
 
       <!-- step 5 -->
-      <div *ngIf="step == 5">
-        <h3 class="mt-4">Invoice paid successfully :-)</h3>
+      <div class="card" *ngIf="step == 5">
+        <div class="card-body">
+          <div class="card-text alert alert-success">
+              <i class="fa fa-check"></i> Invoice paid successfully :-)
+          </div>
+        </div>
       </div>
 
-      <div *ngIf="step == -1">
-        <h3 class="mt-4" >Error :-( Please check console output</h3>
+      <div class="card" *ngIf="step == -1">
+        <div class="card-body">
+          <div class="card-text">
+              Error :-( Please check console output
+          </div>
+        </div>
       </div>
-
     </div>
   </section>
 
