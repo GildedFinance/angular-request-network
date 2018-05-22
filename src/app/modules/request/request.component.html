@@ -1,0 +1,142 @@
+<main class="d-flex flex-row mt-5">
+  <section class="col mb-4">
+    <div class="container content-padding">
+      
+      <!-- step 1 -->
+      <div class="card" *ngIf="step == 1">
+        <div class="card-body">
+          <div class="card-title success">Enter an address for the person who should receive payment</div>
+
+          <div class="card-text">
+              <div class="form-group">
+                  <label>Payee</label>
+                  <input type="text" class="form-control" [(ngModel)]="payee">
+                </div>
+                <div class="form-group">
+                  <label>Amount</label>
+                  <input type="number" class="form-control" [(ngModel)]="amount">
+                </div>
+                <div class="form-group">
+                  <label>Reason</label>
+                  <input type="text" placeholder="This value is optional" class="form-control" [(ngModel)]="reason">
+                </div>
+          </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-end">
+          <!-- button: create invoice  -->
+          <button type="button" (click)="createInvoice()" class="btn btn-primary" [disabled]="createLoading">
+            <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
+            Create Invoice
+          </button>
+        </div>
+      </div>
+
+      <!-- step 2: wait confirmation from blockchain -->
+      <div class="card" *ngIf="step == 2">
+        <div class="card-body">
+            <div class="card-text">
+                <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i> 
+                Wait until the invoice is confirmed on the blockchain...
+            </div>
+        </div>
+      </div>
+
+      <!-- step 3 -->
+      <div class="card" *ngIf="step == 3">
+          <div class="card-body">
+              <div class="card-title">
+                  Invoice created. Now it is ready to pay
+              </div>
+              <div class="card-body">
+                <div class="form-group d-flex flex-column">
+                  <label for="">Request Id:</label>
+                  <span>{{ requestResponse.request.requestId }}</span>
+                </div>
+                <div class="form-group d-flex flex-column" *ngIf="requestResponse.request.data.data.reason">
+                  <label for="">Reason:</label>
+                  <span>{{ requestResponse.request.data.data.reason }}</span>
+                </div>
+              </div>
+          </div>
+
+          <div class="card-footer d-flex justify-content-end">
+              <button type="button" (click)="payInvoice()" class="btn btn-primary">Pay Invoice</button>
+          </div>
+      </div>
+
+      <!-- step 4 -->
+      <div class="card" *ngIf="step == 4">
+        <div class="card-body">
+          <div class="card-text">
+              <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i> 
+              Waiting for payment to clear...
+          </div>
+        </div>
+      </div>
+
+      <!-- step 5 -->
+      <div class="card" *ngIf="step == 5">
+        <div class="card-body">
+          <div class="card-text alert alert-success">
+              <i class="fa fa-check"></i> Invoice paid successfully :-)
+          </div>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="step == -1">
+        <div class="card-body">
+          <div class="card-text">
+              Error :-( Please check console output
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="col mb-4">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div *ngIf="currentAccount | async as account; else accountLocked" class="d-flex justify-content-between align-items-center">
+              <angular-blockies [options]="{ seed: account.toLowerCase() }" class="blockies"></angular-blockies>
+              <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'" [style.borderRight]="'1px solid #617B9F'">
+                <span class="fc-accent fs-12">{{ requestNetworkService.ledgerConnected ? 'Ledger Nano S' : requestNetworkService.metamask ? 'Metamask' : 'Connect a wallet' }}</span>
+                <span class="fs-14">{{ account.substring(0,10) }}...{{ account.substring(37,42) }}</span>
+              </div>
+              <div class="fs-14 d-flex align-items-center network network-{{ requestNetworkService.networkIdObservable | async }}">
+                <span class="network-icon"></span>
+                <span class="network-name"></span>
+              </div>
+            </div>            
+            <ng-template #accountLocked>
+              <div class="d-flex justify-content-between align-items-center">
+                Loading Account ...
+                <div class="d-flex flex-column align-items-start px-2" [style.lineHeight]="'14px'" [style.borderRight]="'1px solid #617B9F'">
+                  <span class="fc-accent fs-12">
+                    <span *ngIf="(requestNetworkService.ledgerConnected || requestNetworkService.metamask); else noWallet">
+                        {{ requestNetworkService.ledgerConnected ? 'Ledger Nano S' : requestNetworkService.metamask ? 'Metamask': 'wallet not found' }}
+                    </span>
+                    <ng-template #noWallet>
+                        <a href="#">Connect a wallet</a>
+                    </ng-template>
+                  </span>
+                  <span class="fs-14">
+                    <span *ngIf="requestNetworkService.metamask; else noMetamask;">Account Locked</span>
+                    <ng-template #noMetamask>(no account)</ng-template>
+                  </span>
+                </div>
+                <div class="fs-14 d-flex align-items-center network network-{{ requestNetworkService.networkIdObservable | async }}">
+                  <span class="network-icon"></span>
+                  <span class="network-name"></span>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- here place modal for new wallet ledger || metamask -->
+
+</main>
