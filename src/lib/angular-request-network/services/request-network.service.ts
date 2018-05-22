@@ -1,21 +1,19 @@
 import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ToastrService } from 'ngx-toastr';
+import { ResponseMessage } from '../models/response-message.model';
 
 import RequestNetwork from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
+declare let window: any;
+
 const Web3 = require('web3');
 
-/* beautify preserve:start */
-declare let window: any;
-/* beautify preserve:end */
-
 @Injectable()
-export class Web3Service {
+export class RequestNetworkService {
   private web3;
   private requestNetwork: RequestNetwork;
   private infuraNodeUrl = {
@@ -29,9 +27,9 @@ export class Web3Service {
 
   public etherscanUrl: string;
 
-  public accountObservable = new BehaviorSubject < string > (null);
-  public networkIdObservable = new BehaviorSubject < number > (null);
-  public searchValue = new Subject < string > ();
+  public accountObservable = new BehaviorSubject <string> (null);
+  public networkIdObservable = new BehaviorSubject <number> (null);
+  public searchValue = new Subject <string> ();
 
   private web3NotReadyMsg = 'Error when trying to instanciate web3.';
   // tslint:disable-next-line:max-line-length
@@ -43,7 +41,7 @@ export class Web3Service {
   public BN;
   public isAddress;
 
-  constructor(private toastrService: ToastrService) {
+  constructor() {
     window.addEventListener('load', async event => {
       this.checkAndInstantiateWeb3();
       this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
@@ -92,7 +90,7 @@ export class Web3Service {
     engine.start();
 
     this.checkAndInstantiateWeb3(new Web3(engine));
-    this.openNotification('Ledger Wallet successfully connected.', null, 'success-snackbar');
+    this.showResponse('Ledger Wallet successfully connected.', 'success');
     this.ledgerConnected = true;
   }
 
@@ -123,7 +121,7 @@ export class Web3Service {
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
-      this.openNotification(this.requestNetworkNotReadyMsg);
+      this.showResponse(this.requestNetworkNotReadyMsg);
       console.error(err);
     }
 
@@ -133,10 +131,7 @@ export class Web3Service {
     this.BN = mixed => new this.web3.utils.BN(mixed);
   }
 
-
-  /* beautify preserve:start */
   private async refreshAccounts(force ?: boolean) {
-  /* beautify preserve:end */
     if (this.ledgerConnected && !force) { return; }
 
     const accs = await this.web3.eth.getAccounts();
@@ -171,24 +166,21 @@ export class Web3Service {
 
   private watchDog() {
     const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
-    if (stop) { this.openNotification(); }
+    if (stop) { this.showResponse(); }
     return stop;
   }
 
-  /* beautify preserve:start */
-  public openNotification(msg ?: string, ok ?: string, panelClass ?: string, duration ?: number) {
-  /* beautify preserve:end */
+  public showResponse(msg ?: string, type ?: string): ResponseMessage {
     if (!msg) {
       // tslint:disable-next-line:max-line-length
       msg = !this.web3 ? this.web3NotReadyMsg : !this.requestNetwork ? this.requestNetworkNotReadyMsg : !this.accountObservable.value ? this.walletNotReadyMsg : '';
       if (msg === '') { return; }
     }
 
-    if (ok) {
-      this.toastrService.success(msg, 'Request Network', { 'positionClass': 'toast-top-full-width' });
-    } else {
-      this.toastrService.error(msg, 'Request Network', { 'positionClass': 'toast-top-full-width' });
-    }
+    const response = new ResponseMessage;
+    response.message = msg;
+    response.type = (type) ? type : 'info';
+    return response;
   }
 
   public setSearchValue(searchValue: string) {
@@ -215,7 +207,7 @@ export class Web3Service {
 
   private confirmTxOnLedgerMsg() {
     if (this.ledgerConnected) {
-      setTimeout(_ => { this.openNotification('Please confirm transaction on your ledger.', null, 'info-snackbar'); }, 1500);
+      setTimeout(_ => { this.showResponse('Please confirm transaction on your ledger.', 'info'); }, 1500);
     }
   }
 
@@ -228,20 +220,17 @@ export class Web3Service {
       .createRequestAsPayee([this.accountObservable.value], [expectedAmountInWei], payer, null, null, data);
   }
 
-
   public cancel(requestId: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.cancel(requestId);
   }
 
-
   public accept(requestId: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.accept(requestId);
   }
-
 
   public subtractAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
@@ -250,14 +239,12 @@ export class Web3Service {
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
 
-
   public additionalAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
   }
-
 
   public paymentAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
@@ -266,14 +253,12 @@ export class Web3Service {
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
 
-
   public refundAction(requestId: string, amount: string, callback ? ) {
     if (this.watchDog()) { return callback(); }
     const amountInWei = this.toWei(amount.toString());
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
   }
-
 
   public async getRequestByRequestId(requestId: string) {
     try {
@@ -286,7 +271,6 @@ export class Web3Service {
     }
   }
 
-
   public async getRequestByTransactionHash(txHash: string) {
     try {
       const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(txHash);
@@ -296,7 +280,6 @@ export class Web3Service {
       return err;
     }
   }
-
 
   public async getRequestEvents(requestId: string) {
     try {
@@ -308,7 +291,6 @@ export class Web3Service {
     }
   }
 
-
   public async getRequestsByAddress(address: string) {
     try {
       const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(address);
@@ -319,13 +301,11 @@ export class Web3Service {
     }
   }
 
-
   public broadcastSignedRequestAsPayer(signedRequest: string, amountsToPay: any[], callback ? ) {
     if (this.watchDog()) { return callback(); }
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.broadcastSignedRequestAsPayer(signedRequest, amountsToPay);
   }
-
 
   public async getIpfsData(hash: string) {
     try {

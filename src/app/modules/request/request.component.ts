@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Web3Service } from '../../util/web3.service';
 import { Observable } from 'rxjs/Observable';
 import { BlockiesModule } from 'angular-blockies';
+import { RequestNetworkService } from '../../../lib/angular-request-network/services/request-network.service';
 
 // object models
 import { Request } from './models/request.model';
 import { Transaction } from './models/transaction.model';
+import { ToastrService } from 'ngx-toastr';
 
 // request response object
 export class RequestResponse {
@@ -35,11 +36,12 @@ export class RequestComponent implements OnInit {
   requestResponse: RequestResponse = new RequestResponse;
 
   constructor(
-    public web3Service: Web3Service
+    public requestNetworkService: RequestNetworkService,
+    public toastrService: ToastrService
   ) {}
 
   ngOnInit() {
-    this.currentAccount = this.web3Service.accountObservable;
+    this.currentAccount = this.requestNetworkService.accountObservable;
   }
 
   /**
@@ -48,7 +50,8 @@ export class RequestComponent implements OnInit {
   async createInvoice() {
     this.createLoading = true;
 
-    this.web3Service.createRequestAsPayee(this.payee, String(this.amount), JSON.stringify({reason: this.reason}), this._callbackRequest)
+    // tslint:disable-next-line:max-line-length
+    this.requestNetworkService.createRequestAsPayee(this.payee, String(this.amount), JSON.stringify({reason: this.reason}), this._callbackRequest)
       .on('broadcasted', response => this._callbackRequest(response))
       .then(
         response => this._callbackForPayment(response), // assign response to variable
@@ -82,11 +85,13 @@ export class RequestComponent implements OnInit {
 
   private _handleRequestErrors(message: any) {
     if (message.startsWith('Invalid status 6985')) {
-      this.web3Service.openNotification('Invalid status 6985. User denied transaction.');
+      const responseMessage = this.requestNetworkService.showResponse('Invalid status 6985. User denied transaction.');
+      this.showToastr(responseMessage.message, 'RQN Request', 'warning');
     } else if (message.startsWith('Failed to subscribe to new newBlockHeaders')) {
       return;
     } else if (message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
-      this.web3Service.openNotification('MetaMask Tx Signature: User denied transaction signature.');
+      const responseMessage = this.requestNetworkService.showResponse('MetaMask Tx Signature: User denied transaction signature.');
+      this.showToastr(responseMessage.message, 'RQN Request', 'warning');
     }
 
     // reset button
@@ -100,13 +105,13 @@ export class RequestComponent implements OnInit {
   payInvoice() {
     this.step = 4;
     // call payment action (pass request Id as parameter and amount to be paid)
-    this.web3Service.paymentAction(this.requestResponse.request.requestId, this.amount, this._callbackPayment)
+    this.requestNetworkService.paymentAction(this.requestResponse.request.requestId, this.amount, this._callbackPayment)
     .on('broadcasted', response => {
       this._callbackPayment(response, 'Payment is being done. Please wait a few moments for it to appear on the Blockchain.')
     }).then(
       response => {
         this.step = 5;
-        this.web3Service.openNotification('Payment completed', 'ok');
+        this.toastrService.success('Payment completed', 'RQN Payment');
         this.createLoading = false; // stop loading
       }, err => {
         this._handlePaymentErrors(err);
@@ -115,7 +120,7 @@ export class RequestComponent implements OnInit {
 
   private _callbackPayment(response, msg ? ) {
     if (response.transaction) {
-      this.web3Service.openNotification(msg || 'Transaction in progress.', 'ok');
+      this.toastrService.success(msg || 'Transaction in progress.', 'RQN Payment');
       // this.loading = response.transaction.hash;
       // this.watchTxHash(this.loading);
     } else if (response.message) {
@@ -125,13 +130,16 @@ export class RequestComponent implements OnInit {
 
   private _handlePaymentErrors(message: any) {
     if (message.startsWith('Invalid status 6985')) {
-      this.web3Service.openNotification('Invalid status 6985. User denied transaction.');
+      const responseMessage = this.requestNetworkService.showResponse('Invalid status 6985. User denied transaction.');
+      this.showToastr(responseMessage.message, 'RQN Payments', 'warning');
     } else if (message.startsWith('Failed to subscribe to new newBlockHeaders')) {
       return;
     } else if (message.startsWith('Returned error: Error: MetaMask Tx Signature')) {
-      this.web3Service.openNotification('MetaMask Tx Signature: User denied transaction signature.');
+      const responseMessage = this.requestNetworkService.showResponse('MetaMask Tx Signature: User denied transaction signature.');
+      this.showToastr(responseMessage.message, 'RQN Payments', 'warning');
     } else {
-      this.web3Service.openNotification(message);
+      const responseMessage = this.requestNetworkService.showResponse(message);
+      this.showToastr(responseMessage.message, 'RQN Payments', 'error');
     }
 
     // reset button
@@ -139,6 +147,23 @@ export class RequestComponent implements OnInit {
 
     // navigate back
     if (this.step > 1) { this.step--; }
+  }
+
+  private showToastr(message: string, title: string, type: string) {
+    switch (type) {
+      case 'info':
+        this.toastrService.info(message, title);
+        break;
+      case 'warning':
+        this.toastrService.warning(message, title);
+        break;
+      case 'success':
+        this.toastrService.success(message, title);
+        break;
+      case 'error':
+        this.toastrService.error(message, title);
+        break;
+    }
   }
 
 }
