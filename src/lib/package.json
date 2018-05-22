@@ -1,12 +1,14 @@
 {
   "$schema": "../../node_modules/ng-packagr/package.schema.json",
   "name": "angular-request-network",
-  "version": "1.0.2-dev",
+  "version": "1.0.3",
   "peerDependencies": {
     "@angular/core": "^5.2.0 || ^6.0.0",
     "@angular/common": "^5.2.0 || ^6.0.0",
     "@angular/platform-browser": "^5.2.0 || ^6.0.0",
-    "rxjs": "^6.0.0",
+    "rxjs": "^6.0.0"
+  },
+  "dependencies": {
     "rxjs-compat": "^6.1.0",
     "@requestnetwork/request-network.js": "^0.6.2",
     "ledger-wallet-provider": "^2.0.1-beta.2",
