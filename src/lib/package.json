@@ -19,28 +19,24 @@
     "lib": {
       "entryFile": "public_api.ts"
     },
-    "whitelistedNonPeerDependencies": ["."],
+    "whitelistedNonPeerDependencies": [
+      "."
+    ],
     "dest": "../../dist"
   },
   "repository": {
     "type": "git",
-    "url": "GildedFinance/angular-request-network"
+    "url": "git+https://github.com/GildedFinance/angular-request-network.git"
   },
   "homepage": "https://github.com/GildedFinance/angular-request-network",
-  "bugs": "https://github.com/GildedFinance/angular-request-network/issues",
+  "bugs": {
+    "url": "https://github.com/GildedFinance/angular-request-network/issues"
+  },
   "license": "MIT",
   "description": "Request Network Angular Service",
   "contributors": [
-    {
-      "name": "Gil Hildebrand",
-      "email": "gil@superchargernyc.com",
-      "url": "http://www.gilhildebrand.com"
-    },
-    {
-      "name": "Eledi Dyrkaj",
-      "email": "edyrkaj@gmail.com",
-      "url": "http://e-soft.al"
-    }
+    "Gil Hildebrand <gil@superchargernyc.com> (http://www.gilhildebrand.com)",
+    "Eledi Dyrkaj <edyrkaj@gmail.com> (http://e-soft.al)"
   ],
   "keywords": [
     "ng",
@@ -50,5 +46,10 @@
     "blockchain",
     "metamask",
     "web3"
-  ]
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eledi Dyrkaj"
 }

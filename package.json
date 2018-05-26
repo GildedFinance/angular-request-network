@@ -59,16 +59,8 @@
     "typescript": "~2.5.3"
   },
   "contributors": [
-    {
-      "name": "Gil Hildebrand",
-      "email": "gil@superchargernyc.com",
-      "url": "http://www.gilhildebrand.com"
-    },
-    {
-      "name": "Eledi Dyrkaj",
-      "email": "edyrkaj@gmail.com",
-      "url": "http://e-soft.al"
-    }
+    "Gil Hildebrand <gil@superchargernyc.com> (http://www.gilhildebrand.com)",
+    "Eledi Dyrkaj <edyrkaj@gmail.com> (http://e-soft.al)"
   ],
   "keywords": [
     "request network",
@@ -81,6 +73,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "GildedFinance/angular-request-network"
-  }
+    "url": "git+https://github.com/GildedFinance/angular-request-network.git"
+  },
+  "description": "This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.1.",
+  "bugs": {
+    "url": "https://github.com/GildedFinance/angular-request-network/issues"
+  },
+  "homepage": "https://github.com/GildedFinance/angular-request-network#readme",
+  "main": "karma.conf.js",
+  "author": "Eledi Dyrkaj"
 }
