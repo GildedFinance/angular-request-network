@@ -12,6 +12,7 @@
     "build:package": "ng-packagr -p src/lib/package.json"
   },
   "dependencies": {
+    "@agm/core": "^1.0.0-beta.3",
     "@angular/animations": "^5.2.10",
     "@angular/cli": "^1.7.4",
     "@angular/common": "^5.2.0",
@@ -22,16 +23,16 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
-    "@requestnetwork/request-network.js": "^0.6.2",
+    "@requestnetwork/request-network.js": "^0.7.1",
     "angular-blockies": "^1.1.0",
-    "angular-bootstrap-md": "^6.0.2",
-    "chart.js": "^2.5.0",
+    "angular-bootstrap-md": "~6.0.2",
+    "chart.js": "~2.5.x",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "hammerjs": "^2.0.8",
     "ledger-wallet-provider": "^2.0.1-beta.2",
-    "ngx-toastr": "^8.5.1",
-    "rxjs": "^5.5.6",
+    "ngx-toastr": "^8.4.0",
+    "rxjs": "^5.5.11",
     "rxjs-compat": "^6.1.0",
     "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5",
@@ -77,5 +78,9 @@
     "wallet",
     "ethereum",
     "rinkeby"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "GildedFinance/angular-request-network"
+  }
 }

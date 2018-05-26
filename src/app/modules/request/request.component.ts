@@ -2,18 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BlockiesModule } from 'angular-blockies';
 import { RequestNetworkService } from '../../../lib/angular-request-network/services/request-network.service';
-
-// object models
-import { Request } from './models/request.model';
-import { Transaction } from './models/transaction.model';
+import { RequestResponse } from '../../../lib/angular-request-network/models/request.model';
 import { ToastrService } from 'ngx-toastr';
-
-// request response object
-export class RequestResponse {
-  request: Request;
-  transaction: Transaction;
-  message: any;
-}
 
 @Component({
   selector: 'app-request',

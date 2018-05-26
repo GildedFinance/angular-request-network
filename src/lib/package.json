@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "rxjs-compat": "^6.1.0",
-    "@requestnetwork/request-network.js": "^0.6.2",
+    "@requestnetwork/request-network.js": "^0.7.1",
     "ledger-wallet-provider": "^2.0.1-beta.2",
     "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5"
@@ -22,7 +22,10 @@
     "whitelistedNonPeerDependencies": ["."],
     "dest": "../../dist"
   },
-  "repository": "GildedFinance/angular-request-network",
+  "repository": {
+    "type": "git",
+    "url": "GildedFinance/angular-request-network"
+  },
   "homepage": "https://github.com/GildedFinance/angular-request-network",
   "bugs": "https://github.com/GildedFinance/angular-request-network/issues",
   "license": "MIT",

@@ -1,7 +1,7 @@
 import { Injectable, HostListener } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ResponseMessage } from '../models/response-message.model';
+import { ResponseMessage } from '../models/request.model';
 
 import RequestNetwork from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
