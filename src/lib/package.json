@@ -1,7 +1,7 @@
 {
   "$schema": "../../node_modules/ng-packagr/package.schema.json",
   "name": "angular-request-network",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "peerDependencies": {
     "@angular/core": "^5.2.0 || ^6.0.0",
     "@angular/common": "^5.2.0 || ^6.0.0",
