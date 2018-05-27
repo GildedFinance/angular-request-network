@@ -6,7 +6,7 @@
     "@angular/core": "^5.2.0 || ^6.0.0",
     "@angular/common": "^5.2.0 || ^6.0.0",
     "@angular/platform-browser": "^5.2.0 || ^6.0.0",
-    "rxjs": "^6.0.0"
+    "rxjs": "^5.5.0"
   },
   "dependencies": {
     "rxjs-compat": "^6.1.0",
@@ -17,17 +17,13 @@
   },
   "ngPackage": {
     "lib": {
-      "entryFile": "public_api.ts"
+      "entryFile": "public_api.ts",
+      "languageLevel": ["dom", "es2017"]
     },
-    "whitelistedNonPeerDependencies": [
-      "."
-    ],
+    "whitelistedNonPeerDependencies": ["."],
     "dest": "../../dist"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GildedFinance/angular-request-network.git"
-  },
+  "repository": "GildedFinance/angular-request-network",
   "homepage": "https://github.com/GildedFinance/angular-request-network",
   "bugs": {
     "url": "https://github.com/GildedFinance/angular-request-network/issues"

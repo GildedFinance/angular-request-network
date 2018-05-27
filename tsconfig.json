@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
@@ -7,7 +8,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "esnext",
+    "target": "es5",
     "typeRoots": [
       "node_modules/@types"
     ],
