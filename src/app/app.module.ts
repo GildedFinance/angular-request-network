@@ -5,9 +5,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 
 // modules
-import { RequestModule } from './modules/request/request.module';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RequestNetworkModule, RequestNetworkService } from 'angular-request-network';
+import { RequestModule } from './modules/request/request.module';
 
 @NgModule({
   schemas: [ NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA ],
@@ -18,9 +19,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     BrowserAnimationsModule,
     MDBBootstrapModule.forRoot(),
+    RequestNetworkModule.forRoot(),
     RequestModule
   ],
-  providers: [],
+  providers: [ RequestNetworkService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

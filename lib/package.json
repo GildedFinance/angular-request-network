@@ -1,0 +1,45 @@
+{
+  "name": "angular-request-network",
+  "version": "1.0.5",
+  "author": "Eledi Dyrkaj <edyrkaj@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "^5.2.0",
+    "@angular/common": "^5.2.0",
+    "@angular/platform-browser": "^5.2.0",
+    "rxjs": "^5.5.0",
+    "@requestnetwork/request-network.js": "^0.7.2",
+    "ledger-wallet-provider": "^2.0.1-beta.2",
+    "web3": "^1.0.0-beta.34",
+    "web3-provider-engine": "^14.0.5"
+  },
+  "dependencies": {
+    "@requestnetwork/request-network.js": "^0.7.2",
+    "ledger-wallet-provider": "^2.0.1-beta.2",
+    "web3": "^1.0.0-beta.34",
+    "web3-provider-engine": "^14.0.5"
+  },
+  "repository": "GildedFinance/angular-request-network",
+  "homepage": "https://github.com/GildedFinance/angular-request-network",
+  "ngPackage": {
+    "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
+    "lib": {
+      "entryFile": "src/public_api.ts"
+    },
+    "whitelistedNonPeerDependencies": ["."],
+    "dest": "../dist/lib"
+  },
+  "contributors": [
+    "Gil Hildebrand <gil@superchargernyc.com> (http://www.gilhildebrand.com)",
+    "Eledi Dyrkaj <edyrkaj@gmail.com> (http://e-soft.al)"
+  ],
+  "keywords": [
+    "ng",
+    "angular",
+    "request-network",
+    "wallet",
+    "blockchain",
+    "metamask",
+    "web3"
+  ]
+}

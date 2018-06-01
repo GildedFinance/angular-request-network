@@ -3,8 +3,10 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    "baseUrl": "./src",
     "sourceMap": true,
-    "declaration": false,
+    "inlineSources": true,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -12,10 +14,17 @@
     "typeRoots": [
       "node_modules/@types"
     ],
+    "skipLibCheck": true,
     "lib": [
       "es2017",
       "dom"
     ],
+    "paths": {
+      "angular-request-network": [ "../dist/lib" ]
+    }
   },
   "include": ["node_modules/angular-bootstrap-md/**/*.ts",  "src/**/*.ts"],
+  "exclude": [
+    ".ng_build"
+  ]
 }

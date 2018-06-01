@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BlockiesModule } from 'angular-blockies';
-import { RequestNetworkService } from '../../../lib/angular-request-network/services/request-network.service';
-import { RequestResponse } from '../../../lib/angular-request-network/models/request.model';
 import { ToastrService } from 'ngx-toastr';
+import { RequestNetworkService, RequestResponse } from 'angular-request-network';
 
 @Component({
   selector: 'app-request',

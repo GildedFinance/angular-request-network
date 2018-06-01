@@ -8,7 +8,7 @@ import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
 
-declare let window: any;
+declare let window: any, require: any;
 
 const Web3 = require('web3');
 
