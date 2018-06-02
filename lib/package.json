@@ -1,6 +1,6 @@
 {
   "name": "angular-request-network",
-  "version": "1.0.5",
+  "version": "1.0.5-rc",
   "author": "Eledi Dyrkaj <edyrkaj@gmail.com>",
   "license": "MIT",
   "peerDependencies": {

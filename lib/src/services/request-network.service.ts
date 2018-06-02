@@ -1,4 +1,4 @@
-import { Injectable, HostListener } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ResponseMessage } from '../models/request.model';
@@ -42,11 +42,9 @@ export class RequestNetworkService {
   public isAddress;
 
   constructor() {
-    window.addEventListener('load', async event => {
-      this.checkAndInstantiateWeb3();
-      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
-      setInterval(async _ => await this.refreshAccounts(), 1000);
-    });
+    this.checkAndInstantiateWeb3();
+    this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
+    setInterval(async _ => await this.refreshAccounts(), 1000);
   }
 
 
