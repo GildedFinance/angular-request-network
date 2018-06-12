@@ -1,6 +1,6 @@
 {
   "name": "angular-request-network",
-  "version": "1.0.5-rc",
+  "version": "1.0.6-dev",
   "author": "Eledi Dyrkaj <edyrkaj@gmail.com>",
   "license": "MIT",
   "peerDependencies": {
@@ -16,6 +16,7 @@
   "dependencies": {
     "@requestnetwork/request-network.js": "^0.7.2",
     "ledger-wallet-provider": "^2.0.1-beta.2",
+    "requestnetwork-data-format": "^0.1.0",
     "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5"
   },
@@ -26,7 +27,9 @@
     "lib": {
       "entryFile": "src/public_api.ts"
     },
-    "whitelistedNonPeerDependencies": ["."],
+    "whitelistedNonPeerDependencies": [
+      "."
+    ],
     "dest": "../dist/lib"
   },
   "contributors": [
