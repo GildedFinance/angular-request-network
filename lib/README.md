@@ -1,4 +1,4 @@
-# Angular Request Network Library version 1.0.5
+# Angular Request Network Library version 1.0.6
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.1.
 
@@ -10,3 +10,11 @@ The app will automatically reload if you change any of the source files.
 ## Further help for CLI commands
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+## Request main methods
+
+Request Network Service:
+
+@createRequestAsPayee()
+@createRequestAsPayer()
