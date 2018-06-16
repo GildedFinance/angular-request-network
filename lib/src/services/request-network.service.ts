@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ResponseMessage } from '../models/request.model';
-import RequestNetworkDataFormat from 'requestnetwork-data-format';
-import RequestNetwork from '@requestnetwork/request-network.js';
+import RequestNetwork, { Types } from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
@@ -230,6 +229,7 @@ export class RequestNetworkService {
 
   /**
    * Create Request as Payee
+   * @deprecated now used with createRequest method
    * @param payee
    * @param expectedAmount
    * @param data
@@ -259,6 +259,7 @@ export class RequestNetworkService {
 
   /**
    * Create Request as Payer
+   * @deprecated now used with createRequest method
    * @param payer
    * @param expectedAmount
    * @param data
@@ -291,32 +292,74 @@ export class RequestNetworkService {
    * Create custom request
    * @param requestSimpleData
    */
-  async createRequest(requestSimpleData: any) {
-    const [payeeAddress, payerAddress] = await this.web3.eth.getAccounts();
+  public createRequest(
+    payerAddress: string, role: Types.Role, currency: Types.Currency,
+    amount: number, requestOptions: Types.IRequestCreationOptions, callback?
+  ) {
 
-    // Create a request as payer
-    const payerInfo = {
-      idAddress: payerAddress,
-      refundAddress: payerAddress
-    };
-    const payeesInfo = [
-      {
-        idAddress: payeeAddress,
-        paymentAddress: payeeAddress,
-        expectedAmount: this.web3.utils.toWei('1.5', 'ether')
-      }
-    ];
-
-    const result = RequestNetworkDataFormat.validate(requestSimpleData);
-
-    if (result.valid) {
-      return this.requestNetwork.createRequest(RequestNetwork.Types.Role.Payee, RequestNetwork.Types.Currency.ETH, payeesInfo, payerInfo, {
-        data: JSON.stringify(requestSimpleData)
+    if (this.watchDog()) return callback();
+    if (!this.web3.utils.isAddress(payerAddress)) {
+      return callback({
+        message: "Payment receiver's address is not a valid address"
       });
-    } else {
-      // use the errors from result.errors
-      console.error(result.errors);
     }
+
+    const expectedAmountInWei = this.toWei(amount.toString());
+
+    let payee, payer: string;
+    // as: Types.Role, currency: Types.Currency, payees: Types.IPayee[], payer: Types.IPayer,
+    // requestOptions: Types.IRequestCreationOptions = {}
+    const connectedAccount = this.accountObservable.value; // current metamask address
+
+    if (role === Types.Role.Payer) {
+      payee = payerAddress;
+      payer = connectedAccount;
+    } else if (role === Types.Role.Payee) {
+      payee = connectedAccount;
+      payer = payerAddress;
+    }
+
+    return this.requestNetwork.createRequest(
+      role,
+      currency,
+      [{
+          idAddress: payee,
+          paymentAddress: payee,
+          additional: 0,
+          expectedAmount: expectedAmountInWei
+      }],
+      {
+          idAddress: payer,
+          refundAddress: payer,
+      },
+      requestOptions
+    );
+    ​
+    // // Pay a request
+    // await request.pay([amount], [0], { from: payerAddress });
+    // ​
+    // // The balance is the same amount as the the expected amount: the request is paid
+    // const data = await request.getData();
+    // console.log(data.payee.expectedAmount.toString());
+    // console.log(data.payee.balance.toString());
+  }
+
+  /**
+   * Create Request Instance from request id
+   * @param {string} requestId The ID of the Request
+   * @returns {Request} The Request
+   */
+  public fromRequestId(requestId: string) {
+    return this.requestNetwork.fromRequestId(requestId);
+  }
+
+  /**
+   * Create Request Instance from a transaction hash
+   * @param {string} txHash Transaction hash
+   * @returns {Promise<{request, transaction, warnings, errors}>}
+   */
+  public fromTransactionHash(txHash: string) {
+    return this.requestNetwork.fromTransactionHash(txHash);
   }
 
   public cancel(requestId: string, callback?) {

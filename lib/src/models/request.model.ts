@@ -1,5 +1,7 @@
-// stores request data
-export class Request {
+/**
+ * @deprecated
+ */
+export class RequestOld {
   creator: string;
   currencyContract: any;
   data: any;
@@ -8,6 +10,13 @@ export class Request {
   requestId: string;
   state: number;
   subPayees: any;
+}
+
+export class Request {
+  currency: number;
+  requestCodeService: any;
+  requestId: string;
+  requestService: any;
 }
 
 // stores transaction object : actually only hash key

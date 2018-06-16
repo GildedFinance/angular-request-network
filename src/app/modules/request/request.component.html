@@ -14,7 +14,7 @@
                 </div>
                 <div class="form-group">
                   <label>Amount</label>
-                  <input type="number" class="form-control" [(ngModel)]="amount">
+                  <input type="number" class="form-control" [(ngModel)]="amount" step="0.1">
                 </div>
                 <div class="form-group">
                   <label>Reason</label>
@@ -23,11 +23,16 @@
           </div>
         </div>
 
-        <div class="card-footer d-flex justify-content-end">
+        <div class="card-footer d-flex justify-content-end" *ngIf="currentAccount | async">
           <!-- button: create invoice  -->
-          <button type="button" (click)="createInvoice()" class="btn btn-primary" [disabled]="createLoading">
+          <button type="button" (click)="createInvoicePayer()" class="btn btn-default" [disabled]="createLoading">
             <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
-            Create Invoice
+            Create Invoice as Payer
+          </button>
+          <!-- button: create invoice  -->
+          <button type="button" (click)="createInvoicePayee()" class="btn btn-primary" [disabled]="createLoading">
+            <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
+            Create Invoice as Payee
           </button>
         </div>
       </div>
@@ -51,11 +56,11 @@
               <div class="card-body">
                 <div class="form-group d-flex flex-column">
                   <label for="">Request Id:</label>
-                  <span>{{ requestResponse.request.requestId }}</span>
+                  <span>{{ request.requestId }}</span>
                 </div>
-                <div class="form-group d-flex flex-column" *ngIf="requestResponse.request.data.data.reason">
+                <div class="form-group d-flex flex-column" *ngIf="request">
                   <label for="">Reason:</label>
-                  <span>{{ requestResponse.request.data.data.reason }}</span>
+                  <span>{{ requestData?.reason }}</span>
                 </div>
               </div>
           </div>
