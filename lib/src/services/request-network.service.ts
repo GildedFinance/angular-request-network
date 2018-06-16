@@ -346,8 +346,8 @@ export class RequestNetworkService {
 
   /**
    * Create Request Instance from request id
-   * @param {string} requestId The ID of the Request
-   * @returns {Request} The Request
+   * @param string requestId The ID of the Request
+   * @returns Request The Request
    */
   public fromRequestId(requestId: string) {
     return this.requestNetwork.fromRequestId(requestId);
@@ -355,8 +355,8 @@ export class RequestNetworkService {
 
   /**
    * Create Request Instance from a transaction hash
-   * @param {string} txHash Transaction hash
-   * @returns {Promise<{request, transaction, warnings, errors}>}
+   * @param string txHash Transaction hash
+   * @returns Promise<{request, transaction, warnings, errors}>
    */
   public fromTransactionHash(txHash: string) {
     return this.requestNetwork.fromTransactionHash(txHash);
