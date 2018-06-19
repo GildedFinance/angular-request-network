@@ -12,7 +12,10 @@ The app will automatically reload if you change any of the source files.
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
 
-## Request main methods
+## Request Network Service supported methods
+
+Documentation about Request Network JS Library: 
+[Request Library API](https://docs-js-lib.request.network/index.html)
 
 Request Network Service:
 
@@ -35,4 +38,29 @@ Request Network Service:
   @deprecated methods
   createRequestAsPayee()
   createRequestAsPayer()
+```
+
+## Use `Request Network Service` in your Angular application
+
+```
+ // use import to the app.module or parent module of your project
+ import { RequestNetworkModule, RequestNetworkService } from 'angular-request-network';
+
+// import module in imports and service in providers
+ @NgModule({
+  schemas: xx,
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    ...
+    RequestNetworkModule.forRoot()
+  ],
+  providers: [ RequestNetworkService ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
 ```
