@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ResponseMessage } from '../models/request.model';
-import RequestNetwork, { Types } from '@requestnetwork/request-network.js';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import LedgerWalletSubprovider from 'ledger-wallet-provider';
+import RequestNetwork, { Types } from '@requestnetwork/request-network.js';
+import { ResponseMessage } from '../models/request.model';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 declare let window: any, require: any;
 
@@ -293,10 +292,13 @@ export class RequestNetworkService {
    * @param requestSimpleData
    */
   public createRequest(
-    payerAddress: string, role: Types.Role, currency: Types.Currency,
-    amount: number, requestOptions: Types.IRequestCreationOptions, callback?
+    payerAddress: string,
+    role: Types.Role,
+    currency: Types.Currency,
+    amount: number,
+    requestOptions: Types.IRequestCreationOptions,
+    callback?
   ) {
-
     if (this.watchDog()) return callback();
     if (!this.web3.utils.isAddress(payerAddress)) {
       return callback({
@@ -322,19 +324,20 @@ export class RequestNetworkService {
     return this.requestNetwork.createRequest(
       role,
       currency,
-      [{
+      [
+        {
           idAddress: payee,
           paymentAddress: payee,
           additional: 0,
           expectedAmount: expectedAmountInWei
-      }],
+        }
+      ],
       {
-          idAddress: payer,
-          refundAddress: payer,
+        idAddress: payer,
+        refundAddress: payer
       },
       requestOptions
     );
-    ​
     // // Pay a request
     // await request.pay([amount], [0], { from: payerAddress });
     // ​

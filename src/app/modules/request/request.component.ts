@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { ToastrService } from 'ngx-toastr';
 import { RequestNetworkService, RequestResponse } from 'angular-request-network';
 import { Types } from '@requestnetwork/request-network.js';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-request',
@@ -51,18 +51,13 @@ export class RequestComponent implements OnInit {
     // tslint:disable-next-line:max-line-length
     this.requestNetworkService
       // .createRequestAsPayer(this.payee, String(this.amount), JSON.stringify({ reason: this.reason }), this._callbackRequest)
-      .createRequest(
-        this.payee,
-        role,
-        Types.Currency.ETH,
-        this.amount,
-        { data: { reason: this.reason } },
-        this._callbackRequest
-      )
+      .createRequest(this.payee, role, Types.Currency.ETH, this.amount, { data: { reason: this.reason } }, this._callbackRequest)
       .on('broadcasted', response => this._callbackRequest(response))
-      .then(
-        resp =>  { this._callbackForPayment(resp); return resp; }
-      ).catch(err => {
+      .then(resp => {
+        this._callbackForPayment(resp);
+        return resp;
+      })
+      .catch(err => {
         this._handleErrors(err);
       });
   }
@@ -75,7 +70,7 @@ export class RequestComponent implements OnInit {
     console.log(requestResponse, 'REQ Response');
     this.requestResponse.request = requestResponse;
     this.request = requestResponse.request;
-    this.request.getData().then( requestData => {
+    this.request.getData().then(requestData => {
       this.requestData = requestData.data.data;
 
       // move to payment step
