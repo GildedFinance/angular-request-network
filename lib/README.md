@@ -1,6 +1,6 @@
-# Angular Request Network Library version 1.0.6
+# Angular Request Network Library version 1.1.0-dev
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.x.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.x.
 
 ## We have a prepared a scaffold project in Github: 
 [Angular Request Network](https://github.com/GildedFinance/angular-request-network)
