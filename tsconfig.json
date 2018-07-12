@@ -11,20 +11,13 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "skipLibCheck": true,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "paths": {
-      "angular-request-network": [ "../dist/lib" ]
+      "angular-request-network": ["../dist/lib"]
     }
   },
-  "include": ["node_modules/angular-bootstrap-md/**/*.ts",  "src/**/*.ts"],
-  "exclude": [
-    ".ng_build"
-  ]
+  "include": ["node_modules/angular-bootstrap-md/**/*.ts", "src/**/*.ts"],
+  "exclude": [".ng_build"]
 }
