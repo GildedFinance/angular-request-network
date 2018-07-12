@@ -240,11 +240,11 @@ export class RequestNetworkService {
     }
     if (!this.web3.utils.isAddress(payee)) {
       return callback({
-        message: "payee's address is not a valid Ethereum address"
+        message: `payee's address is not a valid Ethereum address`
       });
     }
 
-    const expectedAmountInWei = this.toWei(expectedAmount);
+    const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.createRequestAsPayee(
       [this.accountObservable.value],
@@ -270,10 +270,10 @@ export class RequestNetworkService {
     }
     if (!this.web3.utils.isAddress(_payeesIdAddress)) {
       return callback({
-        message: "Payment receiver's address is not a valid Ethereum address"
+        message: `Payment receiver's address is not a valid Ethereum address`
       });
     }
-    const expectedAmountInWei = this.toWei(expectedAmount);
+    const expectedAmountInWei = this.toWei(expectedAmount, 'ether');
     this.confirmTxOnLedgerMsg();
 
     return this.requestNetwork.requestEthereumService.createRequestAsPayer(
@@ -302,11 +302,11 @@ export class RequestNetworkService {
     if (this.watchDog()) return callback();
     if (!this.web3.utils.isAddress(payerAddress)) {
       return callback({
-        message: "Payment receiver's address is not a valid address"
+        message: `Payment receiver's address is not a valid address`
       });
     }
 
-    const expectedAmountInWei = this.toWei(amount.toString());
+    const expectedAmountInWei = this.toWei(amount.toString(), 'ether');
 
     let payee, payer: string;
     // as: Types.Role, currency: Types.Currency, payees: Types.IPayee[], payer: Types.IPayer,
@@ -329,7 +329,8 @@ export class RequestNetworkService {
           idAddress: payee,
           paymentAddress: payee,
           additional: 0,
-          expectedAmount: expectedAmountInWei
+          expectedAmount: expectedAmountInWei,
+          amountToPayAtCreation: expectedAmountInWei
         }
       ],
       {
@@ -385,7 +386,7 @@ export class RequestNetworkService {
     if (this.watchDog()) {
       return callback();
     }
-    const amountInWei = this.toWei(amount.toString());
+    const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.subtractAction(requestId, [amountInWei]);
   }
@@ -394,7 +395,7 @@ export class RequestNetworkService {
     if (this.watchDog()) {
       return callback();
     }
-    const amountInWei = this.toWei(amount.toString());
+    const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.additionalAction(requestId, [amountInWei]);
   }
@@ -403,7 +404,7 @@ export class RequestNetworkService {
     if (this.watchDog()) {
       return callback();
     }
-    const amountInWei = this.toWei(amount.toString());
+    const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.paymentAction(requestId, [amountInWei], []);
   }
@@ -412,7 +413,7 @@ export class RequestNetworkService {
     if (this.watchDog()) {
       return callback();
     }
-    const amountInWei = this.toWei(amount.toString());
+    const amountInWei = this.toWei(amount.toString(), 'ether');
     this.confirmTxOnLedgerMsg();
     return this.requestNetwork.requestEthereumService.refundAction(requestId, amountInWei);
   }
