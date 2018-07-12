@@ -308,7 +308,7 @@ export class RequestNetworkService {
 
     const expectedAmountInWei = this.toWei(amount.toString(), 'ether');
 
-    let payee, payer: string;
+    let payee, payer, amountToPayAtCreation: string;
     // as: Types.Role, currency: Types.Currency, payees: Types.IPayee[], payer: Types.IPayer,
     // requestOptions: Types.IRequestCreationOptions = {}
     const connectedAccount = this.accountObservable.value; // current metamask address
@@ -316,6 +316,7 @@ export class RequestNetworkService {
     if (role === Types.Role.Payer) {
       payee = payerAddress;
       payer = connectedAccount;
+      amountToPayAtCreation = expectedAmountInWei;
     } else if (role === Types.Role.Payee) {
       payee = connectedAccount;
       payer = payerAddress;
@@ -330,7 +331,7 @@ export class RequestNetworkService {
           paymentAddress: payee,
           additional: 0,
           expectedAmount: expectedAmountInWei,
-          amountToPayAtCreation: expectedAmountInWei
+          amountToPayAtCreation: amountToPayAtCreation
         }
       ],
       {

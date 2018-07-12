@@ -26,7 +26,7 @@
     "@angular/platform-browser": "6.0.5",
     "@angular/platform-browser-dynamic": "6.0.5",
     "@angular/router": "6.0.5",
-    "@requestnetwork/request-network.js": "^0.7.3",
+    "@requestnetwork/request-network.js": "^0.7.4",
     "angular-blockies": "^1.1.1",
     "angular-bootstrap-md": "^6.1.4",
     "chart.js": "~2.5.x",
