@@ -15,6 +15,7 @@
     "postinstall": "node lib/patches/patch.js"
   },
   "dependencies": {
+    "@0xproject/subproviders": "^0.8.5",
     "@agm/core": "^1.0.0-beta.3",
     "@angular/animations": "6.0.5",
     "@angular/cli": "6.0.8",
@@ -33,7 +34,6 @@
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "hammerjs": "^2.0.8",
-    "ledger-wallet-provider": "^2.0.1-beta.2",
     "ngx-toastr": "^8.4.0",
     "rxjs": "^6.2.1",
     "web3": "^1.0.0-beta.34",
@@ -63,8 +63,8 @@
     "typescript": "2.7.2"
   },
   "contributors": [
-    "Gil Hildebrand <gil@superchargernyc.com> (http://www.gilhildebrand.com)",
-    "Eledi Dyrkaj <edyrkaj@gmail.com> (http://e-soft.al)"
+    "Gil Hildebrand <gil@gilded.finance> (https://gilded.finance)",
+    "Eledi Dyrkaj <eledi@gilded.finance> (https://gilded-finance)"
   ],
   "keywords": [
     "request network",
