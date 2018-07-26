@@ -102,8 +102,9 @@ export class RequestComponent implements OnInit {
   payInvoice() {
     this.step = 4;
     // call payment action (pass request Id as parameter and amount to be paid)
+    // pay(requestObject: any, amount: string, transactionOptions?: any): any;
     this.requestNetworkService
-      .paymentAction(this.request.requestId, this.amount.toString(), this._callbackPayment)
+      .pay(this.request, this.amount.toString(), this._callbackPayment)
       .on('broadcasted', response => {
         this._callbackPayment(response, 'Payment is being done. Please wait a few moments for it to appear on the Blockchain.');
       })

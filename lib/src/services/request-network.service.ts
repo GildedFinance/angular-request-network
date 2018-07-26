@@ -2,21 +2,16 @@ import { Injectable } from '@angular/core';
 import { ResponseMessage } from '../models/request.model';
 import { Subject, BehaviorSubject } from 'rxjs';
 
-import RequestNetwork, {
-  Types,
-  utils
-} from '@requestnetwork/request-network.js';
+import RequestNetwork, { Types, utils } from '@requestnetwork/request-network.js';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 
-import {
-  ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
-  LedgerSubprovider
-} from '@0xproject/subproviders';
+import { ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync, LedgerSubprovider } from '@0xproject/subproviders';
 
-const Web3 = require('web3');
 declare let window: any;
+
+import Web3 from 'web3';
 
 @Injectable()
 export class RequestNetworkService {
@@ -69,11 +64,7 @@ export class RequestNetworkService {
     return utils.decimalsForCurrency(Types.Currency[currency]);
   }
 
-  public async checkLedger(
-    networkId: number,
-    derivationPath?: string,
-    derivationPathIndex?: number
-  ) {
+  public async checkLedger(networkId: number, derivationPath?: string, derivationPathIndex?: number) {
     const ledgerSubprovider = new LedgerSubprovider({
       ledgerEthereumClientFactoryAsync,
       networkId
@@ -98,11 +89,7 @@ export class RequestNetworkService {
     }
   }
 
-  public instanciateWeb3FromLedger(
-    networkId: number,
-    derivationPath?: string,
-    derivationPathIndex?: number
-  ) {
+  public instanciateWeb3FromLedger(networkId: number, derivationPath?: string, derivationPathIndex?: number) {
     const ledgerSubprovider = new LedgerSubprovider({
       ledgerEthereumClientFactoryAsync,
       networkId
@@ -114,9 +101,7 @@ export class RequestNetworkService {
     engine.setMaxListeners(200);
     engine.addProvider(ledgerSubprovider);
     engine.addProvider(new FilterSubprovider());
-    engine.addProvider(
-      new FetchSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] })
-    );
+    engine.addProvider(new FetchSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
     engine.start();
 
     this.checkAndInstantiateWeb3(engine);
@@ -140,21 +125,14 @@ export class RequestNetworkService {
       const networkId = await this.web3.eth.net.getId();
       this.networkIdObservable.next(networkId);
     } else {
-      console.warn(
-        `No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`
-      );
+      console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`);
       this.networkIdObservable.next(1); // mainnet by default
-      this.web3 = new Web3(
-        new Web3.providers.HttpProvider(this.infuraNodeUrl[1])
-      );
+      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
     }
 
     // instantiate requestnetwork.js
     try {
-      this.requestNetwork = new RequestNetwork(
-        this.web3.currentProvider,
-        this.networkIdObservable.value
-      );
+      this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
       this.showResponse(this.requestNetworkNotReadyMsg);
       console.error(err);
@@ -198,8 +176,7 @@ export class RequestNetworkService {
   }
 
   public watchDog() {
-    const stop =
-      !this.web3 || !this.requestNetwork || !this.accountObservable.value;
+    const stop = !this.web3 || !this.requestNetwork || !this.accountObservable.value;
     if (stop) {
       this.showResponse();
     }
@@ -257,30 +234,52 @@ export class RequestNetworkService {
     }
   }
 
-  public createRequestAsPayee(
-    payer: string,
-    expectedAmount: string,
-    currency: string,
-    paymentAddress: string,
-    requestOptions: any = {}
+/**
+   * In progress...
+   * Create custom request
+   * @param requestSimpleData
+   */
+  public createRequest(
+    payerAddress: string,
+    role: Types.Role,
+    currency: Types.Currency,
+    amount: number,
+    requestOptions: Types.IRequestCreationOptions,
+    callback?
   ) {
-    if (this.watchDog()) {
-      return;
+    if (this.watchDog()) return callback();
+    if (!this.web3.utils.isAddress(payerAddress)) {
+      return callback({
+        message: `Payment receiver's address is not a valid address`
+      });
     }
 
-    requestOptions.transactionOptions = {
-      gasPrice: this.defaultGasPrice
-    };
+    const expectedAmountInWei = this.toWei(amount.toString(), 'ether');
 
-    this.confirmTxOnLedgerMsg();
+    let payee, payer, amountToPayAtCreation: string;
+    // as: Types.Role, currency: Types.Currency, payees: Types.IPayee[], payer: Types.IPayer,
+    // requestOptions: Types.IRequestCreationOptions = {}
+    const connectedAccount = this.accountObservable.value; // current metamask address
+
+    if (role === Types.Role.Payer) {
+      payee = payerAddress;
+      payer = connectedAccount;
+      amountToPayAtCreation = expectedAmountInWei;
+    } else if (role === Types.Role.Payee) {
+      payee = connectedAccount;
+      payer = payerAddress;
+    }
+
     return this.requestNetwork.createRequest(
-      Types.Role.Payee,
-      Types.Currency[currency],
+      role,
+      currency,
       [
         {
-          idAddress: this.accountObservable.value,
-          paymentAddress,
-          expectedAmount: this.toWei(expectedAmount)
+          idAddress: payee,
+          paymentAddress: payee,
+          additional: 0,
+          expectedAmount: expectedAmountInWei,
+          amountToPayAtCreation: amountToPayAtCreation
         }
       ],
       {
@@ -291,10 +290,7 @@ export class RequestNetworkService {
     );
   }
 
-  public cancel(
-    requestObject: any,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public cancel(requestObject: any, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -302,10 +298,7 @@ export class RequestNetworkService {
     return requestObject.cancel(transactionOptions);
   }
 
-  public accept(
-    requestObject: any,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public accept(requestObject: any, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -313,47 +306,34 @@ export class RequestNetworkService {
     return requestObject.accept(transactionOptions);
   }
 
-  public subtract(
-    requestObject: any,
-    amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public subtract(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
     this.confirmTxOnLedgerMsg();
 
-    return requestObject.addSubtractions(
-      [this.toWei(amount)],
-      transactionOptions
-    );
+    return requestObject.addSubtractions([this.toWei(amount)], transactionOptions);
   }
 
-  public additional(
-    requestObject: any,
-    amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public additional(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
     this.confirmTxOnLedgerMsg();
-    return requestObject.addAdditionals(
-      [this.toWei(amount)],
-      transactionOptions
-    );
+    return requestObject.addAdditionals([this.toWei(amount)], transactionOptions);
   }
 
   public pay(
     requestObject: any,
     amount: string,
+    callback?,
     transactionOptions: any = {
       gasPrice: this.defaultGasPrice,
       skipERC20checkAllowance: true
     }
   ) {
     if (this.watchDog()) {
-      return;
+      return callback();
     }
     this.confirmTxOnLedgerMsg();
 
@@ -376,45 +356,27 @@ export class RequestNetworkService {
     return requestObject.refund(this.toWei(amount), transactionOptions);
   }
 
-  public allowSignedRequest(
-    signedRequest: any,
-    amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public allowSignedRequest(signedRequest: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(
-      signedRequest,
-      this.toWei(amount),
-      transactionOptions
-    );
+    return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(signedRequest, this.toWei(amount), transactionOptions);
   }
 
-  public allow(
-    requestId: string,
-    amount: string,
-    transactionOptions: any = { gasPrice: this.defaultGasPrice }
-  ) {
+  public allow(requestId: string, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
     if (this.watchDog()) {
       return;
     }
     this.confirmTxOnLedgerMsg();
-    return this.requestNetwork.requestERC20Service.approveTokenForRequest(
-      requestId,
-      this.toWei(amount),
-      transactionOptions
-    );
+    return this.requestNetwork.requestERC20Service.approveTokenForRequest(requestId, this.toWei(amount), transactionOptions);
   }
 
   public getAllowance(contractAddress: string) {
     if (this.watchDog()) {
       return;
     }
-    return this.requestNetwork.requestERC20Service.getTokenAllowance(
-      contractAddress
-    );
+    return this.requestNetwork.requestERC20Service.getTokenAllowance(contractAddress);
   }
 
   public broadcastSignedRequestAsPayer(
@@ -458,9 +420,7 @@ export class RequestNetworkService {
 
   public async getRequestByTransactionHash(txHash: string) {
     try {
-      const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(
-        txHash
-      );
+      const response = await this.requestNetwork.requestCoreService.getRequestByTransactionHash(txHash);
       return response;
     } catch (err) {
       console.log('Error: ', err.message);
@@ -470,9 +430,7 @@ export class RequestNetworkService {
 
   public async getRequestEvents(requestId: string) {
     try {
-      const events = await this.requestNetwork.requestCoreService.getRequestEvents(
-        requestId
-      );
+      const events = await this.requestNetwork.requestCoreService.getRequestEvents(requestId);
       return events.sort((a, b) => a._meta.timestamp - b._meta.timestamp);
     } catch (err) {
       console.log('Error: ', err.message);
@@ -482,9 +440,7 @@ export class RequestNetworkService {
 
   public async getRequestsByAddress(address: string) {
     try {
-      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(
-        address
-      );
+      const requests = await this.requestNetwork.requestCoreService.getRequestsByAddress(address);
       return requests;
     } catch (err) {
       console.log('Error: ', err.message);
@@ -494,9 +450,7 @@ export class RequestNetworkService {
 
   public async getIpfsData(hash: string) {
     try {
-      const result = await this.requestNetwork.requestCoreService.getIpfsFile(
-        hash
-      );
+      const result = await this.requestNetwork.requestCoreService.getIpfsFile(hash);
       return JSON.parse(result);
     } catch (err) {
       console.log('Error: ', err.message);
@@ -511,12 +465,9 @@ export class RequestNetworkService {
       currency: this.currencyFromContractAddress(transaction.to),
       currencyContract: {
         address: transaction.to,
-        payeePaymentAddress:
-          transaction.method.parameters._payeesPaymentAddress[0] || null,
+        payeePaymentAddress: transaction.method.parameters._payeesPaymentAddress[0] || null,
         payerRefundAddress: transaction.method.parameters._payerRefundAddress,
-        subPayeesPaymentAddress: transaction.method.parameters._payeesPaymentAddress.slice(
-          1
-        )
+        subPayeesPaymentAddress: transaction.method.parameters._payeesPaymentAddress.slice(1)
       },
       data: {
         data: await this.getIpfsData(transaction.method.parameters._data),
@@ -525,24 +476,17 @@ export class RequestNetworkService {
       payee: {
         address: transaction.method.parameters._payeesIdAddress[0],
         balance: this.BN(this.toWei('0')),
-        expectedAmount: this.BN(
-          transaction.method.parameters._expectedAmounts[0]
-        )
+        expectedAmount: this.BN(transaction.method.parameters._expectedAmounts[0])
       },
       payer: transaction.method.parameters._payer,
       subPayees: []
     };
 
-    for (const [
-      index,
-      subPayee
-    ] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
+    for (const [index, subPayee] of transaction.method.parameters._payeesIdAddress.slice(1).entries) {
       subPayee[index] = {
         address: subPayee,
         balance: this.BN(this.toWei('0')),
-        expectedAmount: this.BN(
-          transaction.method.parameters._expectedAmounts[1 + index]
-        )
+        expectedAmount: this.BN(transaction.method.parameters._expectedAmounts[1 + index])
       };
     }
 

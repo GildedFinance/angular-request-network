@@ -27,12 +27,12 @@
           <!-- button: create invoice  -->
           <button type="button" (click)="createInvoicePayer()" class="btn btn-default" [disabled]="createLoading">
             <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
-            Create Invoice as Payer
+            Send Payment
           </button>
           <!-- button: create invoice  -->
           <button type="button" (click)="createInvoicePayee()" class="btn btn-primary" [disabled]="createLoading">
             <i *ngIf="createLoading" class="fa fa-circle-o-notch fa-spin"></i>
-            Create Invoice as Payee
+            Request Payment
           </button>
         </div>
       </div>

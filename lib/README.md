@@ -1,4 +1,4 @@
-# Angular Request Network Library version 1.1.1
+# Angular Request Network Library
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.x.
 
@@ -26,18 +26,25 @@ Request Network Service:
     amount: number, requestOptions: Types.IRequestCreationOptions, callback?)
 
   # method to get request instance by request id
-  fromRequestId(
+  getRequestByRequestId(
     requestId: string
   )
 
   # method to get request instance by generated transaction hash
-  fromTransactionHash(
+  getRequestByTransactionHash(
     txHash: string
   )
 
-  @deprecated methods
-  createRequestAsPayee()
-  createRequestAsPayer()
+  # method to get request instance by address
+  getRequestsByAddress(
+    txHash: string
+  )
+
+  # method to get request events
+  getRequestsEvents(
+    requestId: string
+  )  
+
 ```
 
 ## Use `Request Network Service` in your Angular application
