@@ -44,16 +44,10 @@ export class RequestNetworkService {
   public getBlockNumber;
 
   constructor() {
-    this.networkIdObservable.subscribe(networkId => {
-      this.setEtherscanUrl();
-    });
-
-    window.addEventListener('load', async event => {
-      console.log('web3service instantiate web3');
-      await this.checkAndInstantiateWeb3();
-      setInterval(async () => await this.refreshAccounts(), 1000);
-      this.web3Ready = true;
-    });
+    this.checkAndInstantiateWeb3();
+    this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
+    setInterval(async () => await this.refreshAccounts(), 1000);
+    this.web3Ready = true;
   }
 
   public currencyFromContractAddress(address) {
