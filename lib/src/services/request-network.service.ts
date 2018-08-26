@@ -6,6 +6,7 @@ import RequestNetwork, { Types, utils } from '@requestnetwork/request-network.js
 import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
+import { GasService } from './gas.service';
 
 import { ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync, LedgerSubprovider } from '@0xproject/subproviders';
 
@@ -21,7 +22,6 @@ export class RequestNetworkService {
     1: 'https://mainnet.infura.io/BQBjfSi5EKSCQQpXebO',
     4: 'https://rinkeby.infura.io/BQBjfSi5EKSCQQpXebO'
   };
-  private defaultGasPrice = 10000000000; // 10 gwei
 
   public metamask = false;
   public ledgerConnected = false;
@@ -43,7 +43,9 @@ export class RequestNetworkService {
   public isAddress;
   public getBlockNumber;
 
-  constructor() {
+  constructor(
+    private gasService: GasService
+  ) {
     this.checkAndInstantiateWeb3();
     this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
     setInterval(async () => await this.refreshAccounts(), 1000);
@@ -234,11 +236,13 @@ export class RequestNetworkService {
    * @param requestSimpleData
    */
   public createRequest(
-    payerAddress: string,
     role: Types.Role,
-    currency: Types.Currency,
-    amount: number,
-    requestOptions: Types.IRequestCreationOptions,
+    payerAddress: string,
+    expectedAmount: string,
+    currency: string,
+    paymentAddress: string,
+    requestOptions: any = {},
+    refundAddress?: string,
     callback?
   ) {
     if (this.watchDog()) return callback();
@@ -248,43 +252,25 @@ export class RequestNetworkService {
       });
     }
 
-    const expectedAmountInWei = this.toWei(amount.toString(), 'ether');
-
-    let payee, payer, amountToPayAtCreation: string;
-    // as: Types.Role, currency: Types.Currency, payees: Types.IPayee[], payer: Types.IPayer,
-    // requestOptions: Types.IRequestCreationOptions = {}
-    const connectedAccount = this.accountObservable.value; // current metamask address
-
-    if (role === Types.Role.Payer) {
-      payee = payerAddress;
-      payer = connectedAccount;
-      amountToPayAtCreation = expectedAmountInWei;
-    } else if (role === Types.Role.Payee) {
-      payee = connectedAccount;
-      payer = payerAddress;
-    }
-
     return this.requestNetwork.createRequest(
-      role,
-      currency,
+      Types.Role[role],
+      Types.Currency[currency],
       [
         {
-          idAddress: payee,
-          paymentAddress: payee,
-          additional: 0,
-          expectedAmount: expectedAmountInWei,
-          amountToPayAtCreation: amountToPayAtCreation
-        }
+          idAddress: this.accountObservable.value,
+          paymentAddress,
+          expectedAmount: this.amountToBN(expectedAmount, currency),
+        },
       ],
       {
-        idAddress: payer,
-        refundAddress: payer
+        idAddress: payerAddress,
+        bitcoinRefundAddresses: refundAddress ? [refundAddress] : undefined,
       },
       requestOptions
     );
   }
 
-  public cancel(requestObject: any, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public cancel(requestObject: any, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -292,7 +278,7 @@ export class RequestNetworkService {
     return requestObject.cancel(transactionOptions);
   }
 
-  public accept(requestObject: any, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public accept(requestObject: any, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -300,7 +286,7 @@ export class RequestNetworkService {
     return requestObject.accept(transactionOptions);
   }
 
-  public subtract(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public subtract(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -309,7 +295,7 @@ export class RequestNetworkService {
     return requestObject.addSubtractions([this.toWei(amount)], transactionOptions);
   }
 
-  public additional(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public additional(requestObject: any, amount: string, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -322,7 +308,7 @@ export class RequestNetworkService {
     amount: string,
     callback?,
     transactionOptions: any = {
-      gasPrice: this.defaultGasPrice,
+      gasPrice: this.getGasPrice,
       skipERC20checkAllowance: true
     }
   ) {
@@ -331,7 +317,7 @@ export class RequestNetworkService {
     }
     this.confirmTxOnLedgerMsg();
 
-    transactionOptions.gasPrice = this.defaultGasPrice;
+    transactionOptions.gasPrice = this.getGasPrice;
     return requestObject.pay([this.toWei(amount)], null, transactionOptions);
   }
 
@@ -339,7 +325,7 @@ export class RequestNetworkService {
     requestObject: any,
     amount: string,
     transactionOptions: any = {
-      gasPrice: this.defaultGasPrice,
+      gasPrice: this.getGasPrice,
       skipERC20checkAllowance: true
     }
   ) {
@@ -350,7 +336,7 @@ export class RequestNetworkService {
     return requestObject.refund(this.toWei(amount), transactionOptions);
   }
 
-  public allowSignedRequest(signedRequest: any, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public allowSignedRequest(signedRequest: any, amount: string, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -358,7 +344,7 @@ export class RequestNetworkService {
     return this.requestNetwork.requestERC20Service.approveTokenForSignedRequest(signedRequest, this.toWei(amount), transactionOptions);
   }
 
-  public allow(requestId: string, amount: string, transactionOptions: any = { gasPrice: this.defaultGasPrice }) {
+  public allow(requestId: string, amount: string, transactionOptions: any = { gasPrice: this.getGasPrice }) {
     if (this.watchDog()) {
       return;
     }
@@ -378,7 +364,7 @@ export class RequestNetworkService {
     amountsToPay: any[],
     requestOptions: any = {
       transactionOptions: {
-        gasPrice: this.defaultGasPrice,
+        gasPrice: this.getGasPrice,
         skipERC20checkAllowance: true
       }
     }
@@ -485,5 +471,53 @@ export class RequestNetworkService {
     }
 
     return request;
+  }
+
+  get getGasPrice() {
+    return this.gasService.gasPrice * 1000000000;
+  }
+
+  public amountToBN(amount, currency) {
+    const comps = amount.split('.');
+    currency = typeof currency === 'string' ? currency : Types.Currency[currency];
+    const base = this.getDecimalsForCurrency(currency);
+
+    if (!comps[0]) {
+      comps[0] = '0';
+    }
+    if (!comps[1]) {
+      comps[1] = '0';
+    }
+    while (comps[1].length < base) {
+      comps[1] += '0';
+    }
+    comps[0] = this.BN(comps[0]);
+    comps[1] = this.BN(comps[1]);
+
+    return comps[0].mul(this.BN(10).pow(this.BN(base))).add(comps[1]);
+  }
+
+  public BNToAmount(bignumber, currency) {
+    currency =
+      typeof currency === 'string' ? currency : Types.Currency[currency];
+    const base = this.getDecimalsForCurrency(currency);
+    const negative = bignumber.lt(this.BN(0));
+
+    if (negative) {
+      bignumber = bignumber.mul(this.BN(-1));
+    }
+
+    let fraction = bignumber.mod(this.BN(10).pow(this.BN(base))).toString();
+    const whole = bignumber.div(this.BN(10).pow(this.BN(base))).toString(10);
+
+    while (fraction.length < base) {
+      fraction = `0${fraction}`;
+    }
+    const matches = fraction.match(/^([0-9]*[1-9]|0)(0*)/);
+    fraction = matches && matches[1] ? matches[1] : fraction;
+
+    return `${negative ? '-' : ''}${whole}${
+      fraction === '0' ? '' : `.${fraction}`
+    }`;
   }
 }

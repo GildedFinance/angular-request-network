@@ -1,6 +1,6 @@
 {
   "name": "angular-request-network",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "author": "Eledi Dyrkaj <edyrkaj@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -11,7 +11,7 @@
     "@angular/common": "^6.0.0",
     "@angular/platform-browser": "^6.0.0",
     "rxjs": "^6.0.0",
-    "@requestnetwork/request-network.js": "^0.7.3",
+    "@requestnetwork/request-network.js": "0.7.5",
     "web3": "^1.0.0-beta.34",
     "web3-provider-engine": "^14.0.5",
     "ledger-wallet-provider": "^2.0.1-beta.2",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@0xproject/subproviders": "^0.8.5",
-    "@requestnetwork/request-network.js": "^0.7.4",
+    "@requestnetwork/request-network.js": "0.7.5",
     "ledger-wallet-provider": "^2.0.1-beta.2",
     "requestnetwork-data-format": "^0.1.0",
     "web3": "^1.0.0-beta.34",
