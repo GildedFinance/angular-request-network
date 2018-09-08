@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ResponseMessage } from '../models/request.model';
 import { Subject, BehaviorSubject } from 'rxjs';
 
-import { RequestNetwork, utils, SignedRequest, Types } from '@requestnetwork/request-network.js';
+import RequestNetwork, { utils, SignedRequest, Types } from '@requestnetwork/request-network.js';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
