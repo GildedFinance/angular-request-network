@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ResponseMessage } from '../models/request.model';
 import { Subject, BehaviorSubject } from 'rxjs';
 
-import RequestNetwork, { Types, utils } from '@requestnetwork/request-network.js';
+import { RequestNetwork, utils, SignedRequest, Types } from '@requestnetwork/request-network.js';
 import * as Web3ProviderEngine from 'web3-provider-engine';
 import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
@@ -230,8 +230,7 @@ export class RequestNetworkService {
     }
   }
 
-/**
-   * In progress...
+  /**
    * Create custom request
    * @param requestSimpleData
    */
@@ -264,7 +263,49 @@ export class RequestNetworkService {
       ],
       {
         idAddress: payerAddress,
-        bitcoinRefundAddresses: refundAddress ? [refundAddress] : undefined,
+        refundAddress: refundAddress ? refundAddress : undefined,
+      },
+      requestOptions
+    );
+  }
+
+  /**
+   * Create custom request
+   * @param requestSimpleData
+   */
+  public createRequestAndPay(
+    payerAddress: string,
+    expectedAmount: string,
+    currency: string,
+    paymentAddress: string,
+    requestOptions: any = {},
+    refundAddress?: string,
+    callback?
+  ) {
+    if (this.watchDog()) return callback();
+
+    if (!this.web3.utils.isAddress(payerAddress)) {
+      return callback({
+        message: `Payment receiver's address is not a valid address`
+      });
+    }
+
+    const amountToPay = this.amountToBN(expectedAmount, currency);
+
+    return this.requestNetwork.createRequest(
+      Types.Role.Payee,
+      Types.Currency.ETH,
+      [
+        {
+          idAddress: this.accountObservable.value,
+          paymentAddress,
+          expectedAmount: amountToPay,
+          amountToPayAtCreation: amountToPay
+        },
+      ],
+      {
+        idAddress: payerAddress,
+        refundAddress: refundAddress ? refundAddress : undefined,
       },
       requestOptions
     );
@@ -357,6 +398,22 @@ export class RequestNetworkService {
       return;
     }
     return this.requestNetwork.requestERC20Service.getTokenAllowance(contractAddress);
+  }
+
+  public async createSignedRequest(payeesInfo) {
+    const signedRequest = await this.requestNetwork.createSignedRequest(
+      Types.Role.Payee,
+      Types.Currency.ETH,
+      payeesInfo,
+      Date.now() + 3600 * 1000
+    );
+
+    return signedRequest;
+  }
+
+  public retrieveSignedRequest(signedRequestData) {
+    const signedRequest = new SignedRequest(signedRequestData);
+    return signedRequest;
   }
 
   public broadcastSignedRequestAsPayer(
