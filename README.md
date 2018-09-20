@@ -15,7 +15,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ## Install
 ```npm install angular-request-network --save```
 
-## Exampe Project
+## Example Project
 
 [Angular Request Network](https://github.com/GildedFinance/angular-request-network)
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
