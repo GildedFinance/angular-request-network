@@ -251,6 +251,10 @@ export class RequestNetworkService {
       });
     }
 
+    requestOptions.transactionOptions = {
+      gasPrice: this.getGasPrice,
+    };
+
     return this.requestNetwork.createRequest(
       Types.Role[role],
       Types.Currency[currency],
@@ -289,6 +293,10 @@ export class RequestNetworkService {
         message: `Payment receiver's address is not a valid address`
       });
     }
+
+    requestOptions.transactionOptions = {
+      gasPrice: this.getGasPrice,
+    };
 
     const amountToPay = this.amountToBN(expectedAmount, currency);
 
