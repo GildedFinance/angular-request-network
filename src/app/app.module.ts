@@ -9,6 +9,7 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RequestNetworkModule, RequestNetworkService } from 'angular-request-network';
 import { RequestModule } from './modules/request/request.module';
+import { BlockiesModule } from 'angular-blockies';
 
 @NgModule({
   schemas: [ NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA ],
@@ -19,6 +20,7 @@ import { RequestModule } from './modules/request/request.module';
     BrowserModule,
     BrowserAnimationsModule,
     MDBBootstrapModule.forRoot(),
+    BlockiesModule,
     RequestNetworkModule.forRoot(),
     RequestModule
   ],
