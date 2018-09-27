@@ -1,27 +1,82 @@
 # Angular Request Network Library
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.1.
+This npm package wraps [RequestNetwork.js](https://github.com/RequestNetwork/requestNetwork/tree/master/packages/requestNetwork.js) and provides several useful additions for Angular applications:
 
-## Development server
+- Check and instantiate connection to web3 (MetaMask, Toshi, etc)
+- Determine the proper Etherscan URL based on the current network connect
+- Provides Ledger hardware wallet support
+- Retrieves data from IPFS
+- Converts primitive numbers to [BigNumber](https://www.google.com/search?client=opera&q=bignumber&sourceid=opera&ie=UTF-8&oe=UTF-8)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+See [request-network.service.ts](https://github.com/GildedFinance/angular-request-network/blob/master/lib/src/services/request-network.service.ts) for full usage information.
 
-## Code scaffolding
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.x.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Install
+```npm install angular-request-network --save```
 
-## Build
+## Example Project
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
+[Angular Request Network](https://github.com/GildedFinance/angular-request-network)
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+The app will automatically reload if you change any of the source files.
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## Supported Methods of RequestNetwork.js
+
+Full documentation for Request Network JS Library:
+[Request Library API](https://github.com/RequestNetwork/requestNetwork/tree/master/packages/requestNetwork.js)
+
+
+```
+  // method to create new request as Payer or Payee for different currencies
+  createRequest(
+    payerAddress: string, role: Types.Role, currency: Types.Currency,
+    amount: number, requestOptions: Types.IRequestCreationOptions, callback?)
+
+  // method to get request instance by request id
+  getRequestByRequestId(
+    requestId: string
+  )
+
+  // method to get request instance by generated transaction hash
+  getRequestByTransactionHash(
+    txHash: string
+  )
+
+  // method to get request instance by address
+  getRequestsByAddress(
+    txHash: string
+  )
+
+  // method to get request events
+  getRequestsEvents(
+    requestId: string
+  )  
+
+```
+
+## Use `Request Network Service` in your Angular application
+
+```
+ // use import to the app.module or parent module of your project
+ import { RequestNetworkModule, RequestNetworkService } from 'angular-request-network';
+
+// import module in imports and service in providers
+ @NgModule({
+  schemas: xx,
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    ...
+    RequestNetworkModule.forRoot()
+  ],
+  providers: [ RequestNetworkService ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
