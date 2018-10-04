@@ -275,6 +275,7 @@ export class RequestNetworkService {
 
   /**
    * Create custom request
+   * This method accepts only ETH currency
    * @param requestSimpleData
    */
   public createRequestAndPay(
@@ -286,6 +287,8 @@ export class RequestNetworkService {
     refundAddress?: string,
     callback?
   ) {
+    if (currency !== 'ETH') return { error: 'Currency not allowed', message: 'For this method is allowed only ETH - Ethereum currency' };
+
     if (this.watchDog()) return callback();
 
     if (!this.web3.utils.isAddress(payerAddress)) {
