@@ -287,7 +287,11 @@ export class RequestNetworkService {
     refundAddress?: string,
     callback?
   ) {
-    if (currency !== 'ETH') return { error: 'Currency not allowed', message: 'For this method is allowed only ETH - Ethereum currency' };
+    if (currency !== 'ETH') {
+      return callback({
+        message: 'This method accepts only ETH - Ethereum currency'
+      });
+  }
 
     if (this.watchDog()) return callback();
 
