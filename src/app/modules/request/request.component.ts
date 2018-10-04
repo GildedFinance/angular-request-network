@@ -47,11 +47,13 @@ export class RequestComponent implements OnInit {
 
   private async _createRequest(role: Types.Role) {
     this.createLoading = true;
+    const payer = this.requestNetworkService.accountObservable.value;
+    const amount = String(this.amount);
 
     // tslint:disable-next-line:max-line-length
     this.requestNetworkService
       // .createRequestAsPayer(this.payee, String(this.amount), JSON.stringify({ reason: this.reason }), this._callbackRequest)
-      .createRequest(this.payee, role, Types.Currency.ETH, this.amount, { data: { reason: this.reason } }, this._callbackRequest)
+      .createRequestAndPay(this.payee, amount, Types.Currency.ETH, payer, { data: { reason: this.reason } }, null, this._callbackRequest)
       .on('broadcasted', response => this._callbackRequest(response))
       .then(resp => {
         this._callbackForPayment(resp);

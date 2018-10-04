@@ -7,22 +7,22 @@
     "postinstall": "node patches/patch.js"
   },
   "peerDependencies": {
-    "@angular/core": "^6.0.0",
+    "@0xproject/subproviders": "^0.8.5",
     "@angular/common": "^6.0.0",
+    "@angular/core": "^6.0.0",
     "@angular/platform-browser": "^6.0.0",
-    "rxjs": "^6.0.0",
     "@requestnetwork/request-network.js": "0.7.5",
-    "web3": "^1.0.0-beta.34",
-    "web3-provider-engine": "^14.0.5",
     "ledger-wallet-provider": "^2.0.1-beta.2",
-    "@0xproject/subproviders": "^0.8.5"
+    "rxjs": "^6.0.0",
+    "web3": "^1.0.0-beta.34",
+    "web3-provider-engine": "^14.0.5"
   },
   "dependencies": {
     "@0xproject/subproviders": "^0.8.5",
-    "@requestnetwork/request-network.js": "0.7.5",
+    "@requestnetwork/request-network.js": "0.8.0",
     "ledger-wallet-provider": "^2.0.1-beta.2",
-    "requestnetwork-data-format": "^0.1.0",
-    "web3": "^1.0.0-beta.34",
+    "requestnetwork-data-format": "^0.1.2",
+    "web3": "^1.0.0-beta.36",
     "web3-provider-engine": "^14.0.5"
   },
   "repository": "GildedFinance/angular-request-network",
