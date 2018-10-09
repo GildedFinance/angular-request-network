@@ -282,16 +282,17 @@ export class RequestNetworkService {
     payerAddress: string,
     expectedAmount: string,
     currency: string,
-    paymentAddress: string,
+    payeeAddress: string,
     requestOptions: any = {},
     refundAddress?: string,
     callback?
   ) {
+
     if (currency !== 'ETH') {
       return callback({
         message: 'This method accepts only ETH - Ethereum currency'
       });
-  }
+    }
 
     if (this.watchDog()) return callback();
 
@@ -308,12 +309,12 @@ export class RequestNetworkService {
     const amountToPay = this.amountToBN(expectedAmount, currency);
 
     return this.requestNetwork.createRequest(
-      Types.Role.Payee,
+      Types.Role.Payer,
       Types.Currency.ETH,
       [
         {
-          idAddress: this.accountObservable.value,
-          paymentAddress,
+          idAddress: payeeAddress,
+          paymentAddress: payeeAddress,
           expectedAmount: amountToPay,
           amountToPayAtCreation: amountToPay
         },
