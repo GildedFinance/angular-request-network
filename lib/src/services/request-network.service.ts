@@ -239,7 +239,7 @@ export class RequestNetworkService {
     payerAddress: string,
     expectedAmount: string,
     currency: string,
-    paymentAddress: string,
+    payeeAddress: string,
     requestOptions: any = {},
     refundAddress?: string,
     callback?
@@ -260,8 +260,8 @@ export class RequestNetworkService {
       Types.Currency[currency],
       [
         {
-          idAddress: this.accountObservable.value,
-          paymentAddress,
+          idAddress: payeeAddress,
+          paymentAddress: payeeAddress,
           expectedAmount: this.amountToBN(expectedAmount, currency),
         },
       ],
