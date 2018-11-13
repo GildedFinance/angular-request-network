@@ -4,6 +4,10 @@ import { RequestNetworkService, RequestResponse } from 'angular-request-network'
 import { Types } from '@requestnetwork/request-network.js';
 import { Observable } from 'rxjs';
 
+declare let window: any;
+
+import * as Web3 from 'web3';
+
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
@@ -35,14 +39,18 @@ export class RequestComponent implements OnInit {
    * Step 1: Start new request by clicking button Create Invoice
    */
   async createInvoicePayee() {
-    this._createRequest(Types.Role.Payee);
+    this.requestNetworkService.enableWeb3().then(_ => {
+      this._createRequest(Types.Role.Payee);
+    });
   }
 
   /**
    * Step 1: Start new request by clicking button Create Invoice
    */
   async createInvoicePayer() {
-    this._createRequest(Types.Role.Payer);
+    this.requestNetworkService.enableWeb3().then(_ => {
+      this._createRequest(Types.Role.Payer);
+    });
   }
 
   private async _createRequest(role: Types.Role) {
@@ -50,10 +58,9 @@ export class RequestComponent implements OnInit {
     const payer = this.requestNetworkService.accountObservable.value;
     const amount = String(this.amount);
 
-    // tslint:disable-next-line:max-line-length
     this.requestNetworkService
       // .createRequestAsPayer(this.payee, String(this.amount), JSON.stringify({ reason: this.reason }), this._callbackRequest)
-      .createRequestAndPay(this.payee, amount, Types.Currency.ETH, payer, { data: { reason: this.reason } }, null, this._callbackRequest)
+      .createRequestAndPay(this.payee, amount, 'ETH', payer, { data: { reason: this.reason } }, null, this._callbackRequest)
       .on('broadcasted', response => this._callbackRequest(response))
       .then(resp => {
         this._callbackForPayment(resp);

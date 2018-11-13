@@ -15,7 +15,6 @@
     "postinstall": "node lib/patches/patch.js"
   },
   "dependencies": {
-    "@0xproject/subproviders": "^0.8.5",
     "@agm/core": "^1.0.0-beta.3",
     "@angular/animations": "6.1.7",
     "@angular/cli": "6.2.1",
@@ -27,7 +26,7 @@
     "@angular/platform-browser": "6.1.7",
     "@angular/platform-browser-dynamic": "6.1.7",
     "@angular/router": "6.1.7",
-    "@requestnetwork/request-network.js": "^0.9.0",
+    "@requestnetwork/request-network.js": "0.9.0",
     "angular-blockies": "^1.1.1",
     "angular-bootstrap-md": "^6.1.4",
     "chart.js": "~2.7.2",
@@ -42,7 +41,7 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.8.1",
+    "@angular-devkit/build-angular": "^0.7.1",
     "@angular/compiler-cli": "6.1.7",
     "@angular/language-service": "6.1.7",
     "@types/jasmine": "~2.8.3",

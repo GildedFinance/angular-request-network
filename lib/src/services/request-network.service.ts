@@ -3,16 +3,10 @@ import { ResponseMessage } from '../models/request.model';
 import { Subject, BehaviorSubject } from 'rxjs';
 
 import RequestNetwork, { utils, SignedRequest, Types } from '@requestnetwork/request-network.js';
-import * as Web3ProviderEngine from 'web3-provider-engine';
-import * as FilterSubprovider from 'web3-provider-engine/subproviders/filters';
-import * as FetchSubprovider from 'web3-provider-engine/subproviders/fetch';
 import { GasService } from './gas.service';
 
-import { ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync, LedgerSubprovider } from '@0xproject/subproviders';
-
 declare let window: any;
-
-import Web3 from 'web3';
+import * as Web3 from 'web3';
 
 @Injectable()
 export class RequestNetworkService {
@@ -46,10 +40,10 @@ export class RequestNetworkService {
   constructor(
     private gasService: GasService
   ) {
-    this.checkAndInstantiateWeb3();
-    this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
-    setInterval(async () => await this.refreshAccounts(), 1000);
-    this.web3Ready = true;
+      this.checkAndInstantiateWeb3();
+      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
+      setInterval(async () => await this.refreshAccounts(), 1000);
+      this.web3Ready = true;
   }
 
   public currencyFromContractAddress(address) {
@@ -60,68 +54,26 @@ export class RequestNetworkService {
     return utils.decimalsForCurrency(Types.Currency[currency]);
   }
 
-  public async checkLedger(networkId: number, derivationPath?: string, derivationPathIndex?: number) {
-    const ledgerSubprovider = new LedgerSubprovider({
-      ledgerEthereumClientFactoryAsync,
-      networkId
-    });
-    ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
-    ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
-
-    try {
-      const accounts = await ledgerSubprovider.getAccountsAsync();
-      return accounts.map(acc => ({
-        address: acc,
-        index: (derivationPathIndex || 0) + accounts.indexOf(acc)
-      }));
-    } catch (err) {
-      if (err.message === 'invalid transport instance') {
-        return 'Timeout error. Please verify your ledger is connected and the Ethereum application opened.';
-      } else if (err.message.includes('6801')) {
-        return 'Invalid status 6801. Check to make sure the right application is selected on your Ledger.';
-      } else if (err.message) {
-        return err.message;
-      }
-    }
-  }
-
-  public instanciateWeb3FromLedger(networkId: number, derivationPath?: string, derivationPathIndex?: number) {
-    const ledgerSubprovider = new LedgerSubprovider({
-      ledgerEthereumClientFactoryAsync,
-      networkId
-    });
-    ledgerSubprovider.setPath(derivationPath || `44'/60'/0'`);
-    ledgerSubprovider.setPathIndex(derivationPathIndex || 0);
-
-    const engine = new Web3ProviderEngine();
-    engine.setMaxListeners(200);
-    engine.addProvider(ledgerSubprovider);
-    engine.addProvider(new FilterSubprovider());
-    engine.addProvider(new FetchSubprovider({ rpcUrl: this.infuraNodeUrl[networkId] }));
-    engine.start();
-
-    this.checkAndInstantiateWeb3(engine);
-
-    this.showResponse('Ledger Wallet successfully connected.', 'success');
-  }
-
   public async checkAndInstantiateWeb3(providerEngine?) {
+    if (undefined === window.web3) {
+      console.warn(`No web3 detected for this browser!`, 'angular-request-network');
+      return;
+    }
+
     if (providerEngine || typeof window.web3 !== 'undefined') {
       if (providerEngine) {
         // if Ledger wallet
         this.web3 = new Web3(providerEngine);
-        this.ledgerConnected = true;
         this.refreshAccounts(true);
       } else {
+        await this.enableWeb3();
         // if Web3 has been injected by the browser (Mist/MetaMask)
-        this.ledgerConnected = false;
         this.metamask = window.web3.currentProvider.isMetaMask;
         this.web3 = new Web3(window.web3.currentProvider);
       }
       const networkId = await this.web3.eth.net.getId();
       this.networkIdObservable.next(networkId);
     } else {
-      console.warn(`No web3 detected. Falling back to ${this.infuraNodeUrl[1]}.`);
       this.networkIdObservable.next(1); // mainnet by default
       this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
     }
@@ -141,11 +93,28 @@ export class RequestNetworkService {
     this.getBlockNumber = this.web3.eth.getBlockNumber;
   }
 
-  private async refreshAccounts(force?: boolean) {
-    if (this.ledgerConnected && !force) {
+  async enableWeb3() {
+    if (undefined === window.ethereum) {
+      console.error('Web3 not enabled');
       return;
     }
 
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error('Web3 not enabled');
+        console.error(error);
+      }
+    } else if (window.web3) {
+      // Legacy dapp browsers...
+      window.web3 = new Web3(window.web3.currentProvider);
+    }
+  }
+
+  private async refreshAccounts(force?: boolean) {
+    await window.ethereum.enable();
     const accs = await this.web3.eth.getAccounts();
     if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
