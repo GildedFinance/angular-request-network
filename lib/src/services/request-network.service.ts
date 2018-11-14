@@ -116,7 +116,6 @@ export class RequestNetworkService {
   private async refreshAccounts(force?: boolean) {
     if (!window.ethereum || !window.web3) return;
 
-    await window.ethereum.enable();
     const accs = await this.web3.eth.getAccounts();
     if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
@@ -231,7 +230,7 @@ export class RequestNetworkService {
       Types.Currency[currency],
       [
         {
-          idAddress: payeeAddress,
+          idAddress: this.accountObservable.value,
           paymentAddress: payeeAddress,
           expectedAmount: this.amountToBN(expectedAmount, currency),
         },
@@ -284,7 +283,7 @@ export class RequestNetworkService {
       Types.Currency.ETH,
       [
         {
-          idAddress: payeeAddress,
+          idAddress: this.accountObservable.value,
           paymentAddress: payeeAddress,
           expectedAmount: amountToPay,
           amountToPayAtCreation: amountToPay
