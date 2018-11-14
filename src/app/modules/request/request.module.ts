@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RequestComponent } from './request.component';
-import { BlockiesModule } from 'angular-blockies';
 import { ToastrModule } from 'ngx-toastr';
 import { HttpClientModule } from '@angular/common/http';
+import { BlockiesModule } from 'angular-blockies';
 
 @NgModule({
   imports: [
