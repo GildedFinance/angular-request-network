@@ -40,10 +40,9 @@ export class RequestNetworkService {
   constructor(
     private gasService: GasService
   ) {
-      this.checkAndInstantiateWeb3();
-      this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
-      setInterval(async () => await this.refreshAccounts(), 1000);
-      this.web3Ready = true;
+    this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
+    this.networkIdObservable.next(1); // mainnet by default
+    setInterval(async () => await this.refreshAccounts(), 5000);
   }
 
   public currencyFromContractAddress(address) {
@@ -54,37 +53,41 @@ export class RequestNetworkService {
     return utils.decimalsForCurrency(Types.Currency[currency]);
   }
 
-  public async checkAndInstantiateWeb3(providerEngine?) {
-    if (undefined === window.web3) {
-      console.warn(`No web3 detected for this browser!`, 'angular-request-network');
-      return;
-    }
+  public async enableWeb3() {
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      try {
+        await window.ethereum.enable();
+        this.setupWeb3();
+        return true;
 
-    if (providerEngine || typeof window.web3 !== 'undefined') {
-      if (providerEngine) {
-        // if Ledger wallet
-        this.web3 = new Web3(providerEngine);
-        this.refreshAccounts(true);
-      } else {
-        await this.enableWeb3();
-        // if Web3 has been injected by the browser (Mist/MetaMask)
-        this.metamask = window.web3.currentProvider.isMetaMask;
-        this.web3 = new Web3(window.web3.currentProvider);
+      } catch (error) {
+        console.error('Web3 denied by user');
+        console.error(error);
       }
-      const networkId = await this.web3.eth.net.getId();
-      this.networkIdObservable.next(networkId);
-    } else {
-      this.networkIdObservable.next(1); // mainnet by default
-      this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
+    } else if (window.web3) {
+      // Legacy dapp browsers...
+      window.web3 = new Web3(window.web3.currentProvider);
+      return true;
     }
 
-    // instantiate requestnetwork.js
+    console.error('Ethereum or Web3 service not detected');
+    this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
+    return false;
+  }
+
+  private setupWeb3() {
+    this.metamask = window.web3.currentProvider.isMetaMask;
+    this.web3 = new Web3(window.web3.currentProvider);
+
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
       this.showResponse(this.requestNetworkNotReadyMsg);
       console.error(err);
     }
+
+    this.web3Ready = true;
 
     this.fromWei = this.web3.utils.fromWei;
     this.toWei = this.web3.utils.toWei;
@@ -93,28 +96,8 @@ export class RequestNetworkService {
     this.getBlockNumber = this.web3.eth.getBlockNumber;
   }
 
-  async enableWeb3() {
-    if (undefined === window.ethereum) {
-      console.error('Web3 not enabled');
-      return;
-    }
-
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      try {
-        await window.ethereum.enable();
-      } catch (error) {
-        console.error('Web3 not enabled');
-        console.error(error);
-      }
-    } else if (window.web3) {
-      // Legacy dapp browsers...
-      window.web3 = new Web3(window.web3.currentProvider);
-    }
-  }
-
   private async refreshAccounts(force?: boolean) {
-    if (!window.ethereum || !window.web3) return;
+    if (!this.web3) return;
 
     const accs = await this.web3.eth.getAccounts();
     if (this.accountObservable.value !== accs[0]) {
