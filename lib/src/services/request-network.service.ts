@@ -42,7 +42,7 @@ export class RequestNetworkService {
   ) {
     this.networkIdObservable.subscribe(networkId => this.setEtherscanUrl());
     this.networkIdObservable.next(1); // mainnet by default
-    setInterval(async () => await this.refreshAccounts(), 5000);
+    setInterval(async () => await this.refreshAccounts(), 1000);
   }
 
   public currencyFromContractAddress(address) {
@@ -67,7 +67,9 @@ export class RequestNetworkService {
       }
     } else if (window.web3) {
       // Legacy dapp browsers...
+      console.log('falling back to legacy dapp support');
       window.web3 = new Web3(window.web3.currentProvider);
+      this.setupWeb3();
       return true;
     }
 
@@ -76,9 +78,13 @@ export class RequestNetworkService {
     return false;
   }
 
-  private setupWeb3() {
+  private async setupWeb3() {
+    console.log('setting up web3');
     this.metamask = window.web3.currentProvider.isMetaMask;
     this.web3 = new Web3(window.web3.currentProvider);
+
+    const networkId = await this.web3.eth.net.getId();
+    this.networkIdObservable.next(networkId);
 
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
@@ -103,6 +109,13 @@ export class RequestNetworkService {
     if (this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }
+
+    const networkId = await this.web3.eth.net.getId();
+    this.networkIdObservable.next(networkId);
+    if (this.networkIdObservable.value !== networkId) {
+      this.networkIdObservable.next(networkId);
+    }
+
   }
 
   private setEtherscanUrl() {
