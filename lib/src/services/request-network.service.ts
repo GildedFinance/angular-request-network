@@ -114,6 +114,8 @@ export class RequestNetworkService {
   }
 
   private async refreshAccounts(force?: boolean) {
+    if (!window.ethereum || !window.web3) return;
+
     await window.ethereum.enable();
     const accs = await this.web3.eth.getAccounts();
     if (this.accountObservable.value !== accs[0]) {
