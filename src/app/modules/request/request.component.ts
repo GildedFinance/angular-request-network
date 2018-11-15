@@ -32,7 +32,9 @@ export class RequestComponent implements OnInit {
   constructor(public requestNetworkService: RequestNetworkService, public toastrService: ToastrService) {}
 
   ngOnInit() {
-    this.currentAccount = this.requestNetworkService.accountObservable;
+    this.requestNetworkService.enableWeb3().then(_ => {
+      this.currentAccount = this.requestNetworkService.accountObservable;
+    });
   }
 
   /**
