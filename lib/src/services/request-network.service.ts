@@ -73,9 +73,14 @@ export class RequestNetworkService {
       return true;
     }
 
+    this.enableFallbackWeb3();
+    return false;
+  }
+
+  public async enableFallbackWeb3() {
     console.error('Ethereum or Web3 service not detected');
     this.web3 = new Web3(new Web3.providers.HttpProvider(this.infuraNodeUrl[1]));
-    return false;
+    this.setupRequestNetwork();
   }
 
   private async setupWeb3() {
@@ -85,7 +90,10 @@ export class RequestNetworkService {
 
     const networkId = await this.web3.eth.net.getId();
     this.networkIdObservable.next(networkId);
+    this.setupRequestNetwork();
+  }
 
+  private setupRequestNetwork() {
     try {
       this.requestNetwork = new RequestNetwork(this.web3.currentProvider, this.networkIdObservable.value);
     } catch (err) {
@@ -106,7 +114,7 @@ export class RequestNetworkService {
     if (!this.web3) return;
 
     const accs = await this.web3.eth.getAccounts();
-    if (this.accountObservable.value !== accs[0]) {
+    if (accs && accs.length && this.accountObservable.value !== accs[0]) {
       this.accountObservable.next(accs[0]);
     }
 
