@@ -181,18 +181,18 @@ export class RequestNetworkService {
   public setRequestStatus(request) {
     if (request.state === 2) {
       request.status = 'cancelled';
-    } else if (request.state === 1) {
+    } else {
       if (request.payee.balance.isZero()) {
-        request.status = 'accepted';
+        request.status = request.state === 1 ? 'accepted' : 'created';
       } else if (request.payee.balance.lt(request.payee.expectedAmount)) {
         request.status = 'in progress';
       } else if (request.payee.balance.eq(request.payee.expectedAmount)) {
         request.status = 'complete';
       } else if (request.payee.balance.gt(request.payee.expectedAmount)) {
         request.status = 'overpaid';
+      } else {
+        request.status = 'created';
       }
-    } else {
-      request.status = 'created';
     }
   }
 
